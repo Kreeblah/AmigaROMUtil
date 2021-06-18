@@ -30,10 +30,7 @@ SOFTWARE.
 #include "AmigaROMHashes.h"
 
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 
 // Returns the size of the ROM, with 0 for failure
 // For safety, rom_contents should be the size of
@@ -98,6 +95,7 @@ int SetAmigaROMByteSwap(uint8_t *rom_contents, const size_t rom_size, bool swap_
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
 void SplitAmigaROM(const uint8_t *merged_rom_contents, const size_t merged_rom_size, uint8_t *rom_a_contents, uint8_t *rom_b_contents);
+
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
 void MergeAmigaROM(const uint8_t *rom_a_contents, const uint8_t *rom_b_contents, const size_t split_rom_size, uint8_t *merged_rom_contents);
