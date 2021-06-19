@@ -418,29 +418,29 @@ int SetAmigaROMByteSwap(uint8_t *rom_contents, const size_t rom_size, bool swap_
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-void SplitAmigaROM(const uint8_t *merged_rom_contents, const size_t merged_rom_size, uint8_t *rom_a_contents, uint8_t *rom_b_contents)
+void SplitAmigaROM(const uint8_t *merged_rom_contents, const size_t merged_rom_size, uint8_t *rom_high_contents, uint8_t *rom_low_contents)
 {
 	size_t i;
 
 	for(i = 0; i < merged_rom_size; i = i + 4)
 	{
-		memcpy(&rom_a_contents[i / 2], &merged_rom_contents[i], 2);
-		memcpy(&rom_b_contents[i / 2], &merged_rom_contents[i + 2], 2);
+		memcpy(&rom_high_contents[i / 2], &merged_rom_contents[i], 2);
+		memcpy(&rom_low_contents[i / 2], &merged_rom_contents[i + 2], 2);
 	}
 
-	memcpy(&rom_a_contents[merged_rom_size / 2], &rom_a_contents[0], merged_rom_size / 2);
-	memcpy(&rom_b_contents[merged_rom_size / 2], &rom_b_contents[0], merged_rom_size / 2);
+	memcpy(&rom_high_contents[merged_rom_size / 2], &rom_high_contents[0], merged_rom_size / 2);
+	memcpy(&rom_low_contents[merged_rom_size / 2], &rom_low_contents[0], merged_rom_size / 2);
 }
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-void MergeAmigaROM(const uint8_t *rom_a_contents, const uint8_t *rom_b_contents, const size_t split_rom_size, uint8_t *merged_rom_contents)
+void MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_contents, const size_t split_rom_size, uint8_t *merged_rom_contents)
 {
 	size_t i;
 
 	for(i = 0; i < split_rom_size / 2; i++)
 	{
-		memcpy(&merged_rom_contents[i * 4], &rom_a_contents[i * 2], 2);
-		memcpy(&merged_rom_contents[(i * 4) + 2], &rom_b_contents[i * 2], 2);
+		memcpy(&merged_rom_contents[i * 4], &rom_high_contents[i * 2], 2);
+		memcpy(&merged_rom_contents[(i * 4) + 2], &rom_low_contents[i * 2], 2);
 	}
 }
