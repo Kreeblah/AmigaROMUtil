@@ -27,8 +27,6 @@ SOFTWARE.
 
 #include <stddef.h>
 
-static const size_t AMIGA_ROM_QUANTITY = 38;
-
 struct AmigaROMInfo {
 	char sha1hash[41];
 	size_t file_size;
@@ -37,7 +35,7 @@ struct AmigaROMInfo {
 	int byte_swap;
 };
 
-static const struct AmigaROMInfo AMIGA_ROM_INFO[AMIGA_ROM_QUANTITY] = {
+static const struct AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"c87f9fada4ee4e69f3cca0c36193be822b9f5fe6", 8192,   "Amiga Boot (A1000)",					'M', 0},
 	{"e50f01baf28998928554786372a82c333c91276e", 16384,  "Amiga Boot (A590)",					'M', 0},
 	{"3ce66919f6fd67974923a12d91b730f1ffb4a7ba", 32768,  "Amiga Boot (A4091)",					'M', 0},

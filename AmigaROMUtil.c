@@ -137,6 +137,7 @@ const char* DetectAmigaROMVersion(const uint8_t *rom_contents, const size_t rom_
 	uint8_t *digest;
 	char *hexdigest;
 
+	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 	size_t i;
 
 	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
@@ -159,7 +160,7 @@ const char* DetectAmigaROMVersion(const uint8_t *rom_contents, const size_t rom_
 		return NULL;
 	}
 
-	for (i = 0; i < AMIGA_ROM_QUANTITY; i++)
+	for (i = 0; i < rom_quantity; i++)
 	{
 		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
 		{
@@ -186,6 +187,7 @@ char DetectAmigaROMType(const uint8_t *rom_contents, const size_t rom_size)
 	uint8_t *digest;
 	char *hexdigest;
 
+	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 	size_t i;
 
 	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
@@ -208,7 +210,7 @@ char DetectAmigaROMType(const uint8_t *rom_contents, const size_t rom_size)
 		return 'U';
 	}
 
-	for (i = 0; i < AMIGA_ROM_QUANTITY; i++)
+	for (i = 0; i < rom_quantity; i++)
 	{
 		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
 		{
@@ -449,6 +451,7 @@ int DetectAmigaROMByteSwap(const uint8_t *rom_contents, const size_t rom_size)
 	uint8_t *digest;
 	char *hexdigest;
 
+	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 	size_t i;
 
 	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
@@ -471,7 +474,7 @@ int DetectAmigaROMByteSwap(const uint8_t *rom_contents, const size_t rom_size)
 		return -1;
 	}
 
-	for (i = 0; i < AMIGA_ROM_QUANTITY; i++)
+	for (i = 0; i < rom_quantity; i++)
 	{
 		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
 		{
