@@ -24,8 +24,5 @@ app:			$(MAIN)
 $(MAIN):		$(LIB_OBJS) $(MAIN_OBJ)
 				$(CC) $(CFLAGS) -o $(MAIN) $(LIB_OBJS) $(MAIN_OBJ)
 
-.c.o:
-				$(CC) $(CFLAGS) -c $< -o $@
-
 clean:
 				$(RM) $(LIB_OBJS) $(MAIN_OBJ) $(SHARED_LIB) $(STATIC_LIB) *~ $(MAIN)
