@@ -29,6 +29,7 @@ SOFTWARE.
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #if defined(__APPLE__) && defined(__MACH__)
@@ -86,15 +87,24 @@ extern int sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, siz
 // the largest Amiga ROM plus 11 bytes, to allow for encryption
 uint32_t ReadAmigaROM(const char *filename, uint8_t *rom_contents)
 {
+	uint8_t *buffer;
 	FILE *fp;
-	uint8_t buffer[MAX_AMIGA_ROM_SIZE];
+
 	size_t file_size;
+
+	buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
+
+	if(!buffer)
+	{
+		return 0;
+	}
 
 	memset(buffer, 0, MAX_AMIGA_ROM_SIZE);
 
 	fp = fopen(filename, "rb");
 	if(!fp)
 	{
+		free(buffer);
 		return 0;
 	}
 
@@ -106,14 +116,17 @@ uint32_t ReadAmigaROM(const char *filename, uint8_t *rom_contents)
 	if((file_size != 0) && ((file_size & (file_size - 1)) == 0))
 	{
 		memcpy(rom_contents, buffer, file_size);
+		free(buffer);
 		return file_size;
 	}
 	else if((file_size != 0) && (((file_size - 11) & (file_size - 12)) == 0) && DetectAmigaROMEncryption(buffer)) // Is it encrypted?
 	{
 		memcpy(rom_contents, buffer, file_size);
+		free(buffer);
 		return file_size;
 	}
 
+	free(buffer);
 	return 0;	
 }
 
@@ -121,13 +134,28 @@ uint32_t ReadAmigaROM(const char *filename, uint8_t *rom_contents)
 // Returns NULL for failure, else a string indicating the ROM version
 const char* DetectAmigaROMVersion(const uint8_t *rom_contents, const size_t rom_size)
 {
-	uint8_t digest[20];
-	char hexdigest[41];
+	uint8_t *digest;
+	char *hexdigest;
 
 	size_t i;
 
+	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
+	if(!digest)
+	{
+		return NULL;
+	}
+
+	hexdigest = (char*)malloc(41 * sizeof(char));
+	if(!hexdigest)
+	{
+		free(digest);
+		return NULL;
+	}
+
 	if (sha1digest(digest, hexdigest, rom_contents, rom_size))
 	{
+		free(digest);
+		free(hexdigest);
 		return NULL;
 	}
 
@@ -135,10 +163,14 @@ const char* DetectAmigaROMVersion(const uint8_t *rom_contents, const size_t rom_
 	{
 		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
 		{
+			free(digest);
+			free(hexdigest);
 			return AMIGA_ROM_INFO[i].version;
 		}
 	}
 
+	free(digest);
+	free(hexdigest);
 	return NULL;
 }
 
@@ -151,13 +183,28 @@ const char* DetectAmigaROMVersion(const uint8_t *rom_contents, const size_t rom_
 // U - Unknown ROM
 char DetectAmigaROMType(const uint8_t *rom_contents, const size_t rom_size)
 {
-	uint8_t digest[20];
-	char hexdigest[41];
+	uint8_t *digest;
+	char *hexdigest;
 
 	size_t i;
 
+	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
+	if(!digest)
+	{
+		return 'U';
+	}
+
+	hexdigest = (char*)malloc(41 * sizeof(char));
+	if(!hexdigest)
+	{
+		free(digest);
+		return 'U';
+	}
+
 	if (sha1digest(digest, hexdigest, rom_contents, rom_size))
 	{
+		free(digest);
+		free(hexdigest);
 		return 'U';
 	}
 
@@ -165,10 +212,14 @@ char DetectAmigaROMType(const uint8_t *rom_contents, const size_t rom_size)
 	{
 		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
 		{
+			free(digest);
+			free(hexdigest);
 			return AMIGA_ROM_INFO[i].type;
 		}
 	}
 
+	free(digest);
+	free(hexdigest);
 	return 'U';
 }
 
@@ -180,6 +231,7 @@ char DetectAmigaROMType(const uint8_t *rom_contents, const size_t rom_size)
 uint32_t CalculateAmigaROMChecksum(const uint8_t *rom_contents, const size_t rom_size, const bool calc_new_sum)
 {
 	uint32_t *rom_contents_32 = (uint32_t*)rom_contents;
+
 	uint32_t sum = 0;
 	uint32_t temp = 0;
 	size_t i = 0;
@@ -246,19 +298,33 @@ bool ValidateAmigaROMChecksum(const uint8_t *rom_contents, const size_t rom_size
 // Returns true if it succeeds, or false if it fails.
 bool CorrectAmigaROMChecksum(uint8_t *rom_contents, const size_t rom_size)
 {
-	uint8_t temp_rom_contents[MAX_AMIGA_ROM_SIZE];
+	uint32_t *rom_contents_32;
+	uint8_t *temp_rom_contents;
+
+	uint32_t old_sum = 0;
+	uint32_t new_sum = 0;
+
+	temp_rom_contents = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
+	if(!temp_rom_contents)
+	{
+		return false;
+	}
+
 	memcpy(temp_rom_contents, rom_contents, rom_size);
-	uint32_t *rom_contents_32 = (uint32_t*)temp_rom_contents;
-	uint32_t old_sum = be32toh(rom_contents[(rom_size - 24) / 4]);
-	uint32_t new_sum = CalculateAmigaROMChecksum(temp_rom_contents, rom_size, true);
+
+	rom_contents_32 = (uint32_t*)temp_rom_contents;
+	old_sum = be32toh(rom_contents[(rom_size - 24) / 4]);
+	new_sum = CalculateAmigaROMChecksum(temp_rom_contents, rom_size, true);
 
 	if(old_sum == new_sum)
 	{
+		free(temp_rom_contents);
 		return true;
 	}
 
 	if(new_sum == 0)
 	{
+		free(temp_rom_contents);
 		return false;
 	}
 
@@ -266,11 +332,13 @@ bool CorrectAmigaROMChecksum(uint8_t *rom_contents, const size_t rom_size)
 
 	if(!ValidateAmigaROMChecksum(rom_contents, rom_size))
 	{
+		free(temp_rom_contents);
 		return false;
 	}
 
 	memcpy(rom_contents, temp_rom_contents, rom_size);
 
+	free(temp_rom_contents);
 	return true;
 }
 
@@ -290,27 +358,42 @@ bool DetectAmigaROMEncryption(const uint8_t *rom_contents)
 size_t CryptAmigaROM(uint8_t *rom_contents, const size_t rom_size, bool crypt_operation, const char *keyfile_path)
 {
 	FILE *fp;
+	uint8_t *keyfile_buffer;
+	uint8_t *result_buffer;
+
 	bool is_encrypted = false;
-	uint8_t result_buffer[MAX_AMIGA_ROM_SIZE];
-	uint8_t keyfile_buffer[MAX_AMIGA_ROM_SIZE];
 	size_t result_size = rom_size;
 	size_t keyfile_size = 0;
 	size_t i = 0;
 	size_t key_idx = 0;
 
-	memset(result_buffer, 0, MAX_AMIGA_ROM_SIZE);
-	memset(keyfile_buffer, 0, MAX_AMIGA_ROM_SIZE);
-
 	is_encrypted = DetectAmigaROMEncryption(rom_contents);
-
 	if(is_encrypted == crypt_operation)
 	{
 		return rom_size;
 	}
 
+	keyfile_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
+	if(!keyfile_buffer)
+	{
+		return rom_size;
+	}
+
+	result_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
+	if(!result_buffer)
+	{
+		free(keyfile_buffer);
+		return rom_size;
+	}
+
+	memset(result_buffer, 0, MAX_AMIGA_ROM_SIZE);
+	memset(keyfile_buffer, 0, MAX_AMIGA_ROM_SIZE);
+
 	fp = fopen(keyfile_path, "rb");
 	if(!fp)
 	{
+		free(keyfile_buffer);
+		free(result_buffer);
 		return rom_size;
 	}
 
@@ -320,6 +403,8 @@ size_t CryptAmigaROM(uint8_t *rom_contents, const size_t rom_size, bool crypt_op
 
 	if(keyfile_size < 1)
 	{
+		free(keyfile_buffer);
+		free(result_buffer);
 		return rom_size;
 	}
 
@@ -351,6 +436,8 @@ size_t CryptAmigaROM(uint8_t *rom_contents, const size_t rom_size, bool crypt_op
 		result_size = result_size + 11;
 	}
 
+	free(keyfile_buffer);
+	free(result_buffer);
 	return result_size;
 }
 
@@ -359,13 +446,28 @@ size_t CryptAmigaROM(uint8_t *rom_contents, const size_t rom_size, bool crypt_op
 // -1 indicates the ROM is not an Amiga ROM known to this library
 int DetectAmigaROMByteSwap(const uint8_t *rom_contents, const size_t rom_size)
 {
-	uint8_t digest[20];
-	char hexdigest[41];
+	uint8_t *digest;
+	char *hexdigest;
 
 	size_t i;
 
+	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
+	if(!digest)
+	{
+		return -1;
+	}
+
+	hexdigest = (char*)malloc(41 * sizeof(char));
+	if(!hexdigest)
+	{
+		free(digest);
+		return -1;
+	}
+
 	if (sha1digest(digest, hexdigest, rom_contents, rom_size))
 	{
+		free(digest);
+		free(hexdigest);
 		return -1;
 	}
 
@@ -373,10 +475,14 @@ int DetectAmigaROMByteSwap(const uint8_t *rom_contents, const size_t rom_size)
 	{
 		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
 		{
+			free(digest);
+			free(hexdigest);
 			return AMIGA_ROM_INFO[i].byte_swap;
 		}
 	}
 
+	free(digest);
+	free(hexdigest);
 	return -1;
 }
 
