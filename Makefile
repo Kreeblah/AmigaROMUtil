@@ -4,18 +4,28 @@ MAIN_SRC = main.c
 LIB_OBJS = $(LIB_SRCS:.c=.o)
 MAIN_OBJ = $(MAIN_SRC:.c=.o)
 MAIN = AmigaROMUtil
-SO_FILE = $(MAIN).so
-A_FILE = $(MAIN).a
+SHARED_LIB = $(MAIN).so
+STATIC_LIB = $(MAIN).a
 
-all:		$(MAIN)
+all:			$(SHARED_LIB) $(STATIC_LIB) $(MAIN)
 
-$(MAIN):	$(LIB_OBJS) $(MAIN_OBJ)
-			$(AR) -rv $(A_FILE) $(LIB_OBJS)
-			$(CC) $(CFLAGS) -o $(SO_FILE) $(LIB_OBJS) -shared
-			$(CC) $(CFLAGS) -o $(MAIN) $(LIB_OBJS) $(MAIN_OBJ)
+shared:			$(SHARED_LIB)
+
+$(SHARED_LIB):	$(LIB_OBJS)
+				$(CC) $(CFLAGS) -o $(SHARED_LIB) $(LIB_OBJS) -shared
+
+static:			$(STATIC_LIB)
+
+$(STATIC_LIB):	$(LIB_OBJS)
+				$(AR) -rv $(STATIC_LIB) $(LIB_OBJS)
+
+app:			$(MAIN)
+
+$(MAIN):		$(LIB_OBJS) $(MAIN_OBJ)
+				$(CC) $(CFLAGS) -o $(MAIN) $(LIB_OBJS) $(MAIN_OBJ)
 
 .c.o:
-			$(CC) $(CFLAGS) -c $< -o $@
+				$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-			$(RM) $(LIB_OBJS) $(MAIN_OBJ) $(SO_FILE) $(A_FILE) *~ $(MAIN)
+				$(RM) $(LIB_OBJS) $(MAIN_OBJ) $(SHARED_LIB) $(STATIC_LIB) *~ $(MAIN)
