@@ -137,8 +137,8 @@ const char* DetectAmigaROMVersion(const uint8_t *rom_contents, const size_t rom_
 	uint8_t *digest;
 	char *hexdigest;
 
-	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 	size_t i;
+	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 
 	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
 	if(!digest)
@@ -187,8 +187,8 @@ char DetectAmigaROMType(const uint8_t *rom_contents, const size_t rom_size)
 	uint8_t *digest;
 	char *hexdigest;
 
-	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 	size_t i;
+	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 
 	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
 	if(!digest)
@@ -451,8 +451,8 @@ int DetectAmigaROMByteSwap(const uint8_t *rom_contents, const size_t rom_size)
 	uint8_t *digest;
 	char *hexdigest;
 
-	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 	size_t i;
+	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(struct AmigaROMInfo);
 
 	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
 	if(!digest)
