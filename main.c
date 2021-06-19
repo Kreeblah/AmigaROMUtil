@@ -147,7 +147,19 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	if((swap || unswap || encrypt_rom || decrypt_rom || correct_checksum) && (!rom_input_path || !rom_output_path))
+	if(swap && (!rom_input_path || !rom_high_path || !rom_low_path))
+	{
+		print_help();
+		exit(1);
+	}
+
+	if(unswap && (!rom_high_path || !rom_low_path || !rom_output_path))
+	{
+		print_help();
+		exit(1);
+	}
+
+	if((encrypt_rom || decrypt_rom || correct_checksum) && (!rom_input_path || !rom_output_path))
 	{
 		print_help();
 		exit(1);
@@ -291,12 +303,6 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		printf("WARNING: ROM is not detected as a known merged ROM.\n");
 	}
 
-	if((input_rom_type != 'U' || unconditional_swap) && SetAmigaROMByteSwap(input_rom_lowuffer, input_rom_size, swap, unswap, unconditional_swap) == 0)
-	{
-		printf("ERROR: Unable to perform conditional swap operation.  Aborting.\n");
-		return 1;
-	}
-
 	if(ValidateAmigaROMChecksum(input_rom_lowuffer, input_rom_size))
 	{
 		printf("Source ROM checksum is valid.\n");
@@ -319,6 +325,12 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		{
 			printf("WARNING: Source ROM checksum is invalid.\n");
 		}
+	}
+
+	if((input_rom_type != 'U' || unconditional_swap) && SetAmigaROMByteSwap(input_rom_lowuffer, input_rom_size, swap, unswap, unconditional_swap) == 0)
+	{
+		printf("ERROR: Unable to perform conditional swap operation.  Aborting.\n");
+		return 1;
 	}
 
 	SplitAmigaROM(input_rom_lowuffer, input_rom_size, rom_high_buffer, rom_low_buffer);
