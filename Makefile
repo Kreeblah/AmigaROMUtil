@@ -4,8 +4,8 @@ MAIN_SRC = main.c
 LIB_OBJS = $(LIB_SRCS:.c=.o)
 MAIN_OBJ = $(MAIN_SRC:.c=.o)
 MAIN = AmigaROMUtil
-SHARED_LIB = $(MAIN).so
-STATIC_LIB = $(MAIN).a
+SHARED_LIB = libamigarom.so
+STATIC_LIB = libamigarom.a
 
 all:			$(SHARED_LIB) $(STATIC_LIB) $(MAIN)
 
