@@ -265,29 +265,10 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	rom_high_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
-	if(!rom_high_buffer)
-	{
-		free(input_rom_buffer);
-		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
-		return 1;
-	}
-
-	rom_low_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
-	if(!rom_low_buffer)
-	{
-		free(input_rom_buffer);
-		free(rom_high_buffer);
-		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
-		return 1;
-	}
-
 	input_rom_size = ReadAmigaROM(rom_input_path, input_rom_buffer);
 	if(input_rom_size == 0)
 	{
 		free(input_rom_buffer);
-		free(rom_high_buffer);
-		free(rom_low_buffer);
 		printf("ERROR: Unable to open file: %s\n", rom_input_path);
 		printf("Is it a valid ROM?\n");
 		return 1;
@@ -298,8 +279,6 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		if(encryption_key_path == NULL)
 		{
 			free(input_rom_buffer);
-			free(rom_high_buffer);
-			free(rom_low_buffer);
 			printf("ERROR: ROM is encrypted.  Specify a decryption key to decrypt.\n");
 			return 1;
 		}
@@ -310,8 +289,6 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 			if(decrypted_input_rom_size == input_rom_size)
 			{
 				free(input_rom_buffer);
-				free(rom_high_buffer);
-				free(rom_low_buffer);
 				printf("ERROR: Unable to access ROM decryption key.\n");
 				return 1;
 			}
@@ -320,6 +297,23 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 				input_rom_size = decrypted_input_rom_size;
 			}
 		}
+	}
+
+	rom_high_buffer = (uint8_t*)malloc(input_rom_size * sizeof(uint8_t));
+	if(!rom_high_buffer)
+	{
+		free(input_rom_buffer);
+		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
+		return 1;
+	}
+
+	rom_low_buffer = (uint8_t*)malloc(input_rom_size * sizeof(uint8_t));
+	if(!rom_low_buffer)
+	{
+		free(input_rom_buffer);
+		free(rom_high_buffer);
+		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
+		return 1;
 	}
 
 	input_rom_version = DetectAmigaROMVersion(input_rom_buffer, input_rom_size);
@@ -447,17 +441,9 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	char rom_high_type = '\0';
 	char rom_low_type = '\0';
 
-	output_rom_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
-	if(!output_rom_buffer)
-	{
-		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
-		return 1;
-	}
-
 	rom_high_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
 	if(!rom_high_buffer)
 	{
-		free(output_rom_buffer);
 		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
 		return 1;
 	}
@@ -465,7 +451,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	rom_low_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
 	if(!rom_low_buffer)
 	{
-		free(output_rom_buffer);
 		free(rom_high_buffer);
 		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
 		return 1;
@@ -474,7 +459,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	rom_high_size = ReadAmigaROM(rom_high_path, rom_high_buffer);
 	if(rom_high_size == 0)
 	{
-		free(output_rom_buffer);
 		free(rom_high_buffer);
 		free(rom_low_buffer);
 		printf("ERROR: Unable to open file: %s\n", rom_high_path);
@@ -485,7 +469,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	rom_low_size = ReadAmigaROM(rom_low_path, rom_low_buffer);
 	if(rom_low_size == 0)
 	{
-		free(output_rom_buffer);
 		free(rom_high_buffer);
 		free(rom_low_buffer);
 		printf("ERROR: Unable to open file: %s\n", rom_low_path);
@@ -497,7 +480,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	{
 		if(encryption_key_path == NULL)
 		{
-			free(output_rom_buffer);
 			free(rom_high_buffer);
 			free(rom_low_buffer);
 			printf("ERROR: ROM A is encrypted.  Specify a decryption key to decrypt.\n");
@@ -509,7 +491,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 			if(decrypted_high_rom_size == rom_high_size)
 			{
-				free(output_rom_buffer);
 				free(rom_high_buffer);
 				free(rom_low_buffer);
 				printf("ERROR: Unable to access ROM decryption key.\n");
@@ -526,7 +507,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	{
 		if(encryption_key_path == NULL)
 		{
-			free(output_rom_buffer);
 			free(rom_high_buffer);
 			free(rom_low_buffer);
 			printf("ERROR: ROM B is encrypted.  Specify a decryption key to decrypt.\n");
@@ -538,7 +518,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 			if(decrypted_low_rom_size == rom_low_size)
 			{
-				free(output_rom_buffer);
 				free(rom_high_buffer);
 				free(rom_low_buffer);
 				printf("ERROR: Unable to access ROM decryption key.\n");
@@ -553,10 +532,18 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 	if(rom_high_size != rom_low_size)
 	{
-		free(output_rom_buffer);
 		free(rom_high_buffer);
 		free(rom_low_buffer);
 		printf("ERROR: High and Low ROMs must be the same size to merge.\n");
+		return 1;
+	}
+
+	output_rom_buffer = (uint8_t*)malloc(rom_high_size * sizeof(uint8_t));
+	if(!output_rom_buffer)
+	{
+		free(rom_high_buffer);
+		free(rom_low_buffer);
+		printf("ERROR: Unable to allocate memory for ROM buffer.\n");
 		return 1;
 	}
 

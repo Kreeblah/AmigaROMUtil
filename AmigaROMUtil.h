@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef _AMIGAROMUTIL_H
 #define _AMIGAROMUTIL_H
 
-#define MAX_AMIGA_ROM_SIZE (1024 * 512) + 11
+#define MAX_AMIGA_ROM_SIZE (1024 * 1024) + 11
 
 #include "AmigaROMHashes.h"
 

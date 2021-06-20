@@ -306,7 +306,7 @@ bool CorrectAmigaROMChecksum(uint8_t *rom_contents, const size_t rom_size)
 	uint32_t old_sum = 0;
 	uint32_t new_sum = 0;
 
-	temp_rom_contents = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
+	temp_rom_contents = (uint8_t*)malloc(rom_size * sizeof(uint8_t));
 	if(!temp_rom_contents)
 	{
 		return false;
@@ -381,7 +381,14 @@ size_t CryptAmigaROM(uint8_t *rom_contents, const size_t rom_size, bool crypt_op
 		return rom_size;
 	}
 
-	result_buffer = (uint8_t*)malloc(MAX_AMIGA_ROM_SIZE * sizeof(uint8_t));
+	if(crypt_operation)
+	{
+		result_buffer = (uint8_t*)malloc((rom_size + 11) * sizeof(uint8_t));
+	}
+	else
+	{
+		result_buffer = (uint8_t*)malloc((rom_size - 11) * sizeof(uint8_t));
+	}
 	if(!result_buffer)
 	{
 		free(keyfile_buffer);
