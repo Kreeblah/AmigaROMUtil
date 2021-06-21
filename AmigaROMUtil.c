@@ -115,6 +115,7 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 	parsed_rom_data.parsed_rom = false;
 	parsed_rom_data.rom_data = NULL;
 	parsed_rom_data.rom_size = 0;
+	parsed_rom_data.validated_size = false;
 	parsed_rom_data.is_encrypted = false;
 	parsed_rom_data.can_decrypt = false;
 	parsed_rom_data.successfully_decrypted = false;
@@ -188,6 +189,7 @@ ParsedAmigaROMData ParseAmigaROMData(uint8_t *rom_contents, const size_t rom_siz
 	return_data.parsed_rom = false;
 	return_data.rom_data = NULL;
 	return_data.rom_size = 0;
+	return_data.validated_size = false;
 	return_data.is_encrypted = false;
 	return_data.can_decrypt = false;
 	return_data.successfully_decrypted = false;
@@ -244,6 +246,7 @@ ParsedAmigaROMData ParseAmigaROMData(uint8_t *rom_contents, const size_t rom_siz
 		return_data.parsed_rom = true;
 		return_data.rom_data = rom_contents;
 		return_data.rom_size = rom_size;
+		return_data.validated_size = ValidateAmigaROMSize(rom_contents, rom_size);
 		return_data.header = DetectAmigaKickstartROMTypeFromHeader(rom_contents, rom_size);
 		return_data.type = DetectAmigaROMType(rom_contents, rom_size);
 		return_data.version = DetectAmigaROMVersion(rom_contents, rom_size);
@@ -255,6 +258,7 @@ ParsedAmigaROMData ParseAmigaROMData(uint8_t *rom_contents, const size_t rom_siz
 		return_data.parsed_rom = true;
 		return_data.rom_data = rom_contents;
 		return_data.rom_size = rom_size;
+		return_data.validated_size = ValidateAmigaROMSize(rom_buffer, rom_buffer_size);
 		return_data.header = DetectAmigaKickstartROMTypeFromHeader(rom_buffer, rom_buffer_size);
 		return_data.type = DetectAmigaROMType(rom_buffer, rom_buffer_size);
 		return_data.version = DetectAmigaROMVersion(rom_buffer, rom_buffer_size);
@@ -567,6 +571,14 @@ bool ValidateAmigaKickstartROMFooter(const uint8_t *rom_contents, const size_t r
 	}
 
 	return true;
+}
+
+// Validate the ROM size matches the size embedded in the ROM.
+// Returns true if it does, or false if it doesn't.
+bool ValidateEmbeddedROMSize(const uint8_t *rom_contents, const size_t rom_size)
+{
+	const uint32_t *rom_contents_32 = (const uint32_t*)rom_contents;
+	return (be32toh(rom_contents_32[(rom_size / 4) - 5]) == rom_size);
 }
 
 // Detects whether an Amiga ROM is encrypted.

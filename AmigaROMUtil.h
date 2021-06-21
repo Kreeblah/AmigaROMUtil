@@ -36,6 +36,7 @@ typedef struct {
 	bool parsed_rom;
 	uint8_t *rom_data;
 	size_t rom_size;
+	bool validated_size;
 	bool is_encrypted;
 	bool can_decrypt;
 	bool successfully_decrypted;
@@ -58,6 +59,10 @@ ParsedAmigaROMData ParseAmigaROMData(uint8_t *rom_contents, const size_t rom_siz
 // Return whether an Amiga ROM is a valid size, accounting for
 // encryption, if it's there.
 bool ValidateAmigaROMSize(const uint8_t *rom_contents, const size_t rom_size);
+
+// Validate the ROM size matches the size embedded in the ROM.
+// Returns true if it does, or false if it doesn't.
+bool ValidateEmbeddedROMSize(const uint8_t *rom_contents, const size_t rom_size);
 
 // Detects the version of the ROM by SHA1 hash
 // Returns NULL for failure, else a string indicating the ROM version
