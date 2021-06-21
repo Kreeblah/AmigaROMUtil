@@ -32,10 +32,32 @@ SOFTWARE.
 #include <stdbool.h>
 #include <stdint.h>
 
-// Returns the size of the ROM, with 0 for failure
-// For safety, rom_contents should be the size of
-// the largest Amiga ROM plus 11 bytes, to allow for encryption
-uint32_t ReadAmigaROM(const char *filename, uint8_t *rom_contents);
+typedef struct {
+	bool parsed_rom;
+	uint8_t *rom_data;
+	size_t rom_size;
+	bool is_encrypted;
+	bool can_decrypt;
+	bool successfully_decrypted;
+	char header;
+	char type;
+	const char *version;
+	bool is_kickety_split;
+	bool valid_footer;
+} ParsedAmigaROMData;
+
+// Returns a parsed ROM data struct, with the ROM data and size included.
+// If anything files, parsed_rom will be false.  If encrypted, the ROM
+// will be decrypted.
+ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_path);
+
+// Parses and validates the data in the Amiga ROM and returns what is found
+// in a ParsedAmigaROMData struct.
+ParsedAmigaROMData ParseAmigaROMData(uint8_t *rom_contents, const size_t rom_size, const char *keyfile_path);
+
+// Return whether an Amiga ROM is a valid size, accounting for
+// encryption, if it's there.
+bool ValidateAmigaROMSize(const uint8_t *rom_contents, const size_t rom_size);
 
 // Detects the version of the ROM by SHA1 hash
 // Returns NULL for failure, else a string indicating the ROM version
@@ -49,6 +71,16 @@ const char* DetectAmigaROMVersion(const uint8_t *rom_contents, const size_t rom_
 // O - Other (non-Kickstart) ROM
 // U - Unknown ROM
 char DetectAmigaROMType(const uint8_t *rom_contents, const size_t rom_size);
+
+// Detect whether a ROM is a "Kickety-Split ROM"
+// Returns true if it is, and false if it isn't.
+bool DetectKicketySplitAmigaROM(const uint8_t *rom_contents, const size_t rom_size);
+
+// Detect which type of kickstart ROM a purported Kickstart ROM claims to be
+// based on its header and size.  If this data is not consistent, or is unknown,
+// the method returns 'U'.  Otherwise, it returns '5' for a 512k ROM, '2' for a
+// 256k ROM, or 'E' for an extended ROM.
+char DetectAmigaKickstartROMTypeFromHeader(const uint8_t *rom_contents, const size_t rom_size);
 
 // Returns an unsigned 32-bit integer with the checksum for the ROM.
 // This checksum is used by Amigas to validate whether a ROM is undamaged,
@@ -70,9 +102,13 @@ bool ValidateAmigaROMChecksum(const uint8_t *rom_contents, const size_t rom_size
 // Returns true if it succeeds, or false if it fails.
 bool CorrectAmigaROMChecksum(uint8_t *rom_contents, const size_t rom_size);
 
+// Validates whether an Amiga kickstart ROM as a valid footer.
+// Returns true if it does, or false if it doesn't.
+bool ValidateAmigaKickstartROMFooter(const uint8_t *rom_contents, const size_t rom_size);
+
 // Detects whether an Amiga ROM is encrypted.
-// Returns true if it is, or false if it isn't.
-bool DetectAmigaROMEncryption(const uint8_t *rom_contents);
+// Returns 1 if it is, 0 if it isn't, or -1 if it has an invalid size.
+int DetectAmigaROMEncryption(const uint8_t *rom_contents, const size_t rom_size);
 
 // Encrypts or decrypts Amiga ROMs according to whether crypt_operation is true or false.
 // If true, it will encrypt the ROMs.  If false, it will decrypt them.
@@ -81,6 +117,9 @@ bool DetectAmigaROMEncryption(const uint8_t *rom_contents);
 // For safety, make sure that rom_contents has space for 11 more bytes than the original
 // ROM had if an encrypt operation is performed.
 size_t CryptAmigaROM(uint8_t *rom_contents, const size_t rom_size, bool crypt_operation, const char *keyfile_path);
+
+// Run the actual crypt operation, using the ROM data and keyfile data
+void DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size_t rom_size, const uint8_t *keyfile_data, const size_t keyfile_size);
 
 // 0 indicates the ROM is not byte swapped (the ROM is for emulators)
 // 1 indicates the ROM is byte swapped (the ROM is for physical ICs)
