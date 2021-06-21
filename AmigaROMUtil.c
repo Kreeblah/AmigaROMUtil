@@ -226,7 +226,6 @@ ParsedAmigaROMData ParseAmigaROMData(uint8_t *rom_contents, const size_t rom_siz
 	if(return_data.is_encrypted)
 	{
 		memcpy(rom_buffer, rom_contents, rom_size);
-
 		rom_buffer_size = CryptAmigaROM(rom_buffer, rom_size, false, keyfile_path);
 
 		if(rom_buffer_size == rom_size)
@@ -647,13 +646,22 @@ size_t CryptAmigaROM(uint8_t *rom_contents, const size_t rom_size, bool crypt_op
 	{
 		result_buffer = (uint8_t*)malloc((rom_size - 11) * sizeof(uint8_t));
 	}
+
 	if(!result_buffer)
 	{
 		free(keyfile_buffer);
 		return rom_size;
 	}
 
-	memset(result_buffer, 0, MAX_AMIGA_ROM_SIZE);
+	if(crypt_operation)
+	{
+		memset(result_buffer, 0, rom_size + 11);
+	}
+	else
+	{
+		memset(result_buffer, 0, rom_size - 11);
+	}
+
 	memset(keyfile_buffer, 0, MAX_AMIGA_ROM_SIZE);
 
 	fp = fopen(keyfile_path, "rb");
