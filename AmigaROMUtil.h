@@ -37,6 +37,7 @@ typedef struct {
 	uint8_t *rom_data;
 	size_t rom_size;
 	bool validated_size;
+	bool has_reset_vector;
 	bool is_encrypted;
 	bool can_decrypt;
 	bool successfully_decrypted;
@@ -62,7 +63,11 @@ bool ValidateAmigaROMSize(const uint8_t *rom_contents, const size_t rom_size);
 
 // Validate the ROM size matches the size embedded in the ROM.
 // Returns true if it does, or false if it doesn't.
-bool ValidateEmbeddedROMSize(const uint8_t *rom_contents, const size_t rom_size);
+bool ValidateEmbeddedAmigaROMSize(const uint8_t *rom_contents, const size_t rom_size);
+
+// Validate that there is a reset vector (0x0x4E70) at 0x000000D0.
+// Returns true if there is, or false if there isn't.
+bool ValidateAmigaROMResetVector(const uint8_t *rom_contents, const size_t rom_size);
 
 // Detects the version of the ROM by SHA1 hash
 // Returns NULL for failure, else a string indicating the ROM version
