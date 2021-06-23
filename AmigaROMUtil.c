@@ -628,6 +628,8 @@ bool CorrectAmigaROMChecksum(ParsedAmigaROMData *amiga_rom)
 
 	memcpy(amiga_rom->rom_data, temp_rom_data, amiga_rom->rom_size);
 
+	amiga_rom->has_valid_checksum = true;
+
 	free(temp_rom_data);
 	temp_rom_data = NULL;
 	return true;
@@ -814,6 +816,7 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 		}
 
 		memcpy(amiga_rom->rom_data, result_buffer, result_size);
+		amiga_rom->rom_size = result_size;
 	}
 	else
 	{
@@ -829,15 +832,15 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 
 		snprintf((char*)(amiga_rom->rom_data), 12, "AMIROMTYPE1");
 		memcpy(&(amiga_rom->rom_data)[11], result_buffer, result_size);
-		result_size = result_size + 11;
+		amiga_rom->rom_size = result_size + 11;
+
+		ParseAmigaROMData(amiga_rom, NULL);
 	}
 
 	free(keyfile_buffer);
 	keyfile_buffer = NULL;
 	free(result_buffer);
 	result_buffer = NULL;
-
-	amiga_rom->rom_size = result_size;
 
 	return true;
 }
@@ -1007,6 +1010,8 @@ bool MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_cont
 	}
 
 	amiga_rom->rom_size = split_rom_size;
+
+	ParseAmigaROMData(amiga_rom, NULL);
 
 	return true;
 }
