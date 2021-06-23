@@ -145,10 +145,10 @@ bool SetAmigaROMByteSwap(ParsedAmigaROMData *amiga_rom, const bool swap_bytes, c
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-void SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_contents, uint8_t *rom_low_contents);
+bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_contents, uint8_t *rom_low_contents);
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-void MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_contents, const size_t split_rom_size, ParsedAmigaROMData *amiga_rom);
+bool MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_contents, const size_t split_rom_size, ParsedAmigaROMData *amiga_rom);
 
 #endif

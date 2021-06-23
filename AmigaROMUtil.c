@@ -957,13 +957,14 @@ bool SetAmigaROMByteSwap(ParsedAmigaROMData *amiga_rom, const bool swap_bytes, c
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-void SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_contents, uint8_t *rom_low_contents)
+// Returns true if it succeeds, or false if it doesn't.
+bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_contents, uint8_t *rom_low_contents)
 {
 	size_t i;
 
-	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0 || !rom_high_contents || !rom_low_contents)
+	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0 || amiga_rom->rom_size % 2 != 0 || !rom_high_contents || !rom_low_contents)
 	{
-		return;
+		return false;
 	}
 
 	for(i = 0; i < amiga_rom->rom_size; i = i + 4)
@@ -974,17 +975,20 @@ void SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_conten
 
 	memcpy(&rom_high_contents[amiga_rom->rom_size / 2], &rom_high_contents[0], amiga_rom->rom_size / 2);
 	memcpy(&rom_low_contents[amiga_rom->rom_size / 2], &rom_low_contents[0], amiga_rom->rom_size / 2);
+
+	return true;
 }
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-void MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_contents, const size_t split_rom_size, ParsedAmigaROMData *amiga_rom)
+// Returns true if it succeeds, or false if it doesn't.
+bool MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_contents, const size_t split_rom_size, ParsedAmigaROMData *amiga_rom)
 {
 	size_t i;
 
-	if(!amiga_rom || !(amiga_rom->rom_data) || !rom_high_contents || !rom_low_contents || split_rom_size == 0)
+	if(!amiga_rom || !(amiga_rom->rom_data) || !rom_high_contents || !rom_low_contents || split_rom_size == 0 || split_rom_size % 4 != 0)
 	{
-		return;
+		return false;
 	}
 
 	for(i = 0; i < split_rom_size / 4; i++)
@@ -994,4 +998,6 @@ void MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_cont
 	}
 
 	amiga_rom->rom_size = split_rom_size;
+
+	return true;
 }

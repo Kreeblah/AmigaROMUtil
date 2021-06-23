@@ -353,7 +353,17 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	SplitAmigaROM(&input_rom, rom_high_buffer, rom_low_buffer);
+	if(!SplitAmigaROM(&input_rom, rom_high_buffer, rom_low_buffer))
+	{
+		free(input_rom.rom_data);
+		input_rom.rom_data = NULL;
+		free(rom_high_buffer);
+		rom_high_buffer = NULL;
+		free(rom_low_buffer);
+		rom_low_buffer = NULL;
+		printf("ERROR: ROM split operation failed.  Aborting.\n");
+		return 1;
+	}
 
 	fp = fopen(rom_high_path, "wb");
 	if(!fp)
@@ -561,7 +571,18 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	MergeAmigaROM(high_rom.rom_data, low_rom.rom_data, high_rom.rom_size, &output_rom);
+	if(!MergeAmigaROM(high_rom.rom_data, low_rom.rom_data, high_rom.rom_size, &output_rom))
+	{
+		free(output_rom.rom_data);
+		output_rom.rom_data = NULL;
+		free(high_rom.rom_data);
+		high_rom.rom_data = NULL;
+		free(low_rom.rom_data);
+		low_rom.rom_data = NULL;
+		printf("ERROR: ROM merge operation failed.  Aborting.\n");
+		return 1;
+	}
+
 	ParseAmigaROMData(&output_rom, encryption_key_path);
 
 	if(output_rom.has_valid_checksum)
