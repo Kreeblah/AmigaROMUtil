@@ -236,7 +236,7 @@ void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path)
 		}
 	}
 
-	if(!(amiga_rom->is_encrypted) || (amiga_rom->is_encrypted && amiga_rom->successfully_decrypted))
+	if(!amiga_rom->is_encrypted)
 	{
 		amiga_rom->parsed_rom = true;
 		amiga_rom->validated_size = ValidateEmbeddedAmigaROMSize(amiga_rom);
