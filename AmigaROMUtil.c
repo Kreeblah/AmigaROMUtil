@@ -196,9 +196,6 @@ void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path)
 	amiga_rom->parsed_rom = false;
 	amiga_rom->validated_size = false;
 	amiga_rom->has_reset_vector = false;
-	amiga_rom->is_encrypted = false;
-	amiga_rom->can_decrypt = false;
-	amiga_rom->successfully_decrypted = false;
 	amiga_rom->is_byte_swapped = false;
 	amiga_rom->has_valid_checksum = false;
 	amiga_rom->header = 'U';
@@ -233,14 +230,15 @@ void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path)
 		}
 		else
 		{
-			amiga_rom->is_encrypted = true;
-			amiga_rom->can_decrypt = true;
+			amiga_rom->is_encrypted = false;
+			amiga_rom->can_decrypt = false;
 			amiga_rom->successfully_decrypted = true;
 		}
 	}
 	else
 	{
 		amiga_rom->can_decrypt = false;
+		amiga_rom->successfully_decrypted = false;
 	}
 
 	if(!(amiga_rom->is_encrypted) || (amiga_rom->is_encrypted && amiga_rom->successfully_decrypted))
