@@ -227,10 +227,13 @@ void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path)
 	{
 		if(!CryptAmigaROM(amiga_rom, false, keyfile_path))
 		{
+			amiga_rom->is_encrypted = true;
 			amiga_rom->can_decrypt = false;
+			amiga_rom->successfully_decrypted = false;
 		}
 		else
 		{
+			amiga_rom->is_encrypted = true;
 			amiga_rom->can_decrypt = true;
 			amiga_rom->successfully_decrypted = true;
 		}
