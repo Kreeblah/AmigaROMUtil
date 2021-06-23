@@ -131,7 +131,7 @@ int DetectAmigaROMEncryption(const ParsedAmigaROMData *amiga_rom);
 bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, const char *keyfile_path);
 
 // Run the actual crypt operation, using the ROM data and keyfile data
-void DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size_t rom_size, const uint8_t *keyfile_data, const size_t keyfile_size);
+bool DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size_t rom_size, const uint8_t *keyfile_data, const size_t keyfile_size);
 
 // 0 indicates the ROM is not byte swapped (the ROM is for emulators)
 // 1 indicates the ROM is byte swapped (the ROM is for physical ICs)

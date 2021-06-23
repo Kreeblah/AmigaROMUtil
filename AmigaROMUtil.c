@@ -792,7 +792,14 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 		memcpy(result_buffer, amiga_rom->rom_data, result_size);
 	}
 
-	DoAmigaROMCryptOperation(result_buffer, result_size, keyfile_buffer, keyfile_size);
+	if(!DoAmigaROMCryptOperation(result_buffer, result_size, keyfile_buffer, keyfile_size))
+	{
+		free(keyfile_buffer);
+		keyfile_buffer = NULL;
+		free(result_buffer);
+		result_buffer = NULL;
+		return false;
+	}
 
 	if(is_encrypted)
 	{
@@ -836,14 +843,14 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 }
 
 // Run the actual crypt operation, using the ROM data and keyfile data
-void DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size_t rom_size, const uint8_t *keyfile_data, const size_t keyfile_size)
+bool DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size_t rom_size, const uint8_t *keyfile_data, const size_t keyfile_size)
 {
 	size_t i = 0;
 	size_t key_idx = 0;
 
 	if(!rom_data_without_crypt_header || rom_size == 0 || !keyfile_data || keyfile_size == 0)
 	{
-		return;
+		return false;
 	}
 
 	for(i = 0; i < rom_size; i++)
@@ -851,6 +858,8 @@ void DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size
 		rom_data_without_crypt_header[i] ^= keyfile_data[key_idx];
 		key_idx = (key_idx + 1) % keyfile_size;
 	}
+
+	return true;
 }
 
 // 0 indicates the ROM is not byte swapped (the ROM is for emulators)
