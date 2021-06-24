@@ -252,7 +252,7 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	uint8_t *rom_low_buffer;
 
 	size_t bytes_written = 0;
-	ParsedAmigaROMData input_rom = {};
+	ParsedAmigaROMData input_rom;
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
 	if(!input_rom.parsed_rom)
@@ -438,9 +438,9 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	FILE *fp;
 
 	size_t bytes_written;
-	ParsedAmigaROMData high_rom = {};
-	ParsedAmigaROMData low_rom = {};
-	ParsedAmigaROMData output_rom = {};
+	ParsedAmigaROMData high_rom;
+	ParsedAmigaROMData low_rom;
+	ParsedAmigaROMData output_rom;
 
 	high_rom = ReadAmigaROM(rom_high_path, encryption_key_path);
 	if(!high_rom.parsed_rom)
@@ -701,7 +701,7 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 
 	size_t bytes_written = 0;
 	size_t encrypted_input_rom_size = 0;
-	ParsedAmigaROMData input_rom = {};
+	ParsedAmigaROMData input_rom;
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
 	if(!input_rom.parsed_rom)
@@ -832,7 +832,7 @@ int crypt_rom(const bool encryption_state, const char* encryption_key_path, cons
 	size_t bytes_written = 0;
 	size_t encrypted_input_rom_size = 0;
 
-	ParsedAmigaROMData input_rom = {};
+	ParsedAmigaROMData input_rom;
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
 	if(!input_rom.parsed_rom)
@@ -936,7 +936,7 @@ int checksum_rom(const bool correct_checksum, const char* encryption_key_path, c
 	FILE *fp;
 
 	size_t bytes_written = 0;
-	ParsedAmigaROMData input_rom = {};
+	ParsedAmigaROMData input_rom;
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
 	if(!input_rom.parsed_rom)
