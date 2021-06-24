@@ -182,8 +182,8 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 	snprintf(output_string, string_length, "ROM Info:\n\nSuccessfully parsed:\t\t%d\nROM size validated:\t\t%d\nHas reset vector:\t\t%d\nROM is encrypted:\t\t%d\nCan decrypt ROM:\t\t%d\nSuccessfully decrypted ROM:\t%d\nROM is byte swapped:\t\t%d\nROM has a valid checksum:\t%d\nROM header info:\t\t%c\nROM type:\t\t\t%c\nROM version:\t\t\t%s\nROM is a \"Kickety-Split\" ROM:\t%d\nROM has a valid footer:\t\t%d\n\n", amiga_rom->parsed_rom, amiga_rom->validated_size, amiga_rom->has_reset_vector, amiga_rom->is_encrypted, amiga_rom->can_decrypt, amiga_rom->successfully_decrypted, amiga_rom->is_byte_swapped, amiga_rom->has_valid_checksum, amiga_rom->header, amiga_rom->type, amiga_rom->version, amiga_rom->is_kickety_split, amiga_rom->valid_footer);
 }
 
-// Parses and validates the data in the Amiga ROM and returns what is found
-// in a ParsedAmigaROMData struct.
+// Parses and validates the data in the Amiga ROM updates the struct
+// passed in with that data.
 void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path)
 {
 	int rom_encryption_result = 0;

@@ -56,8 +56,8 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 // Puts ROM info data into output_string
 void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string, const size_t string_length);
 
-// Parses and validates the data in the Amiga ROM and returns what is found
-// in a ParsedAmigaROMData struct.
+// Parses and validates the data in the Amiga ROM updates the struct
+// passed in with that data.
 void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path);
 
 // Return whether an Amiga ROM is a valid size, accounting for
