@@ -32,7 +32,7 @@ SOFTWARE.
 #include <string.h>
 #include <unistd.h>
 
-void print_help();
+void print_help(void);
 int split_rom(const bool swap, const bool unswap, const bool unconditional_swap, const char* encryption_key_path, const bool correct_checksum, const char* rom_high_path, const char* rom_low_path, const char* rom_input_path);
 int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap, const bool encrypt_rom, const char* encryption_key_path, const bool correct_checksum, const char* rom_high_path, const char* rom_low_path, const char* rom_output_path);
 int swap_rom(const bool swap_state, const bool unconditional_swap, const bool encrypt_rom, const char* encryption_key_path, const bool correct_checksum, const char* rom_input_path, const char* rom_output_path);
@@ -219,7 +219,7 @@ int main(int argc, char** argv)
 	exit(operation_result);
 }
 
-void print_help()
+void print_help(void)
 {
     printf("Usage: AmigaROMUtil [options]\n");
     printf("Options:\n");
