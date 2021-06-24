@@ -107,7 +107,7 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 {
 	FILE *fp;
 
-	ParsedAmigaROMData amiga_rom = {};
+	ParsedAmigaROMData amiga_rom;
 	int seek_status;
 
 	amiga_rom.parsed_rom = false;
@@ -145,7 +145,7 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 	}
 	else
 	{
-		amiga_rom.rom_size = ftell(fp);
+		amiga_rom.rom_size = (size_t)ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 	}
 
@@ -755,7 +755,7 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 	}
 	else
 	{
-		keyfile_size = ftell(fp);
+		keyfile_size = (size_t)ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 	}
 
@@ -925,7 +925,7 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 bool SetAmigaROMByteSwap(ParsedAmigaROMData *amiga_rom, const bool swap_bytes, const bool unswap_bytes, const bool swap_unconditionally)
 {
 	size_t i;
-	int is_swapped;
+	int is_swapped = 0;
 
 	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0)
 	{
