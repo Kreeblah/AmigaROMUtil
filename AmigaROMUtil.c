@@ -309,7 +309,7 @@ const char* DetectAmigaROMVersion(const ParsedAmigaROMData *amiga_rom)
 		return NULL;
 	}
 
-	hexdigest = (char*)malloc(41 * sizeof(char));
+	hexdigest = (char*)malloc(41);
 	if(!hexdigest)
 	{
 		free(digest);
@@ -371,7 +371,7 @@ char DetectAmigaROMType(const ParsedAmigaROMData *amiga_rom)
 		return 'U';
 	}
 
-	hexdigest = (char*)malloc(41 * sizeof(char));
+	hexdigest = (char*)malloc(41);
 	if(!hexdigest)
 	{
 		free(digest);
@@ -883,7 +883,7 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 		return -1;
 	}
 
-	hexdigest = (char*)malloc(41 * sizeof(char));
+	hexdigest = (char*)malloc(41);
 	if(!hexdigest)
 	{
 		free(digest);
