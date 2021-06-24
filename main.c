@@ -742,6 +742,32 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 		return 1;
 	}
 
+	if(input_rom.has_valid_checksum)
+	{
+		printf("ROM checksum is valid.\n");
+	}
+	else
+	{
+		if(correct_checksum)
+		{
+			if(CorrectAmigaROMChecksum(&input_rom))
+			{
+				printf("Corrected ROM checksum.\n");
+			}
+			else
+			{
+				free(input_rom.rom_data);
+				input_rom.rom_data = NULL;
+				printf("ERROR: Unable to correct checksum for ROM.  Aborting.\n");
+				return 1;
+			}
+		}
+		else
+		{
+			printf("WARNING: ROM checksum is invalid.\n");
+		}
+	}
+
 	if(encrypt_rom)
 	{
 		if(encryption_key_path == NULL)

@@ -1,4 +1,4 @@
-CFLAGS = -O2 -std=c17 -Wall -Werror
+CFLAGS = -O2 -std=c17 -Wall -Wextra -Werror
 LIB_SRCS = AmigaROMUtil.c teeny-sha1.c
 MAIN_SRC = main.c
 LIB_OBJS = $(LIB_SRCS:.c=.o)
