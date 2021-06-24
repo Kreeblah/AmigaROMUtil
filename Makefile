@@ -9,6 +9,8 @@ STATIC_LIB = libamigarom.a
 
 all:			$(SHARED_LIB) $(STATIC_LIB) $(MAIN)
 
+libs:			$(SHARED_LIB) $(STATIC_LIB)
+
 shared:			$(SHARED_LIB)
 
 $(SHARED_LIB):	$(LIB_OBJS)
