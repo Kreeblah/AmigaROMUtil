@@ -149,14 +149,14 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 		fseek(fp, 0, SEEK_SET);
 	}
 
-	amiga_rom.rom_data = (uint8_t*)malloc(amiga_rom.rom_size * sizeof(uint8_t));
+	amiga_rom.rom_data = (uint8_t*)malloc(amiga_rom.rom_size);
 
 	if(!amiga_rom.rom_data)
 	{
 		return amiga_rom;
 	}
 
-	fread(amiga_rom.rom_data, sizeof(uint8_t), amiga_rom.rom_size, fp);
+	fread(amiga_rom.rom_data, 1, amiga_rom.rom_size, fp);
 
 	fclose(fp);
 
@@ -303,7 +303,7 @@ const char* DetectAmigaROMVersion(const ParsedAmigaROMData *amiga_rom)
 		return NULL;
 	}
 
-	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
+	digest = (uint8_t*)malloc(20);
 	if(!digest)
 	{
 		return NULL;
@@ -365,7 +365,7 @@ char DetectAmigaROMType(const ParsedAmigaROMData *amiga_rom)
 		return 'U';
 	}
 
-	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
+	digest = (uint8_t*)malloc(20);
 	if(!digest)
 	{
 		return 'U';
@@ -587,7 +587,7 @@ bool CorrectAmigaROMChecksum(ParsedAmigaROMData *amiga_rom)
 		return false;
 	}
 
-	temp_rom_data = (uint8_t*)malloc(amiga_rom->rom_size * sizeof(uint8_t));
+	temp_rom_data = (uint8_t*)malloc(amiga_rom->rom_size);
 	if(!temp_rom_data)
 	{
 		return false;
@@ -725,11 +725,11 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 
 	if(crypt_operation)
 	{
-		result_buffer = (uint8_t*)malloc((amiga_rom->rom_size + 11) * sizeof(uint8_t));
+		result_buffer = (uint8_t*)malloc((amiga_rom->rom_size + 11));
 	}
 	else
 	{
-		result_buffer = (uint8_t*)malloc((amiga_rom->rom_size - 11) * sizeof(uint8_t));
+		result_buffer = (uint8_t*)malloc((amiga_rom->rom_size - 11));
 	}
 
 	if(!result_buffer)
@@ -759,7 +759,7 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 		fseek(fp, 0, SEEK_SET);
 	}
 
-	keyfile_buffer = (uint8_t*)malloc(keyfile_size * sizeof(uint8_t));
+	keyfile_buffer = (uint8_t*)malloc(keyfile_size);
 	if(!keyfile_buffer)
 	{
 		free(result_buffer);
@@ -767,7 +767,7 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 		return false;
 	}
 
-	fread(keyfile_buffer, sizeof(uint8_t), keyfile_size, fp);
+	fread(keyfile_buffer, 1, keyfile_size, fp);
 
 	fclose(fp);
 
@@ -801,7 +801,7 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 
 	if(is_encrypted)
 	{
-		amiga_rom->rom_data = realloc(amiga_rom->rom_data, result_size * sizeof(uint8_t));
+		amiga_rom->rom_data = realloc(amiga_rom->rom_data, result_size);
 		if(!amiga_rom->rom_data)
 		{
 			free(keyfile_buffer);
@@ -816,7 +816,7 @@ bool CryptAmigaROM(ParsedAmigaROMData *amiga_rom, const bool crypt_operation, co
 	}
 	else
 	{
-		amiga_rom->rom_data = realloc(amiga_rom->rom_data, (result_size + 11) * sizeof(uint8_t));
+		amiga_rom->rom_data = realloc(amiga_rom->rom_data, (result_size + 11));
 		if(!amiga_rom->rom_data)
 		{
 			free(keyfile_buffer);
@@ -877,7 +877,7 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 		return -1;
 	}
 
-	digest = (uint8_t*)malloc(20 * sizeof(uint8_t));
+	digest = (uint8_t*)malloc(20);
 	if(!digest)
 	{
 		return -1;

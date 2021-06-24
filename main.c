@@ -276,7 +276,7 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	rom_high_buffer = (uint8_t*)malloc(input_rom.rom_size * sizeof(uint8_t));
+	rom_high_buffer = (uint8_t*)malloc(input_rom.rom_size);
 	if(!rom_high_buffer)
 	{
 		free(input_rom.rom_data);
@@ -285,7 +285,7 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	rom_low_buffer = (uint8_t*)malloc(input_rom.rom_size * sizeof(uint8_t));
+	rom_low_buffer = (uint8_t*)malloc(input_rom.rom_size);
 	if(!rom_low_buffer)
 	{
 		free(input_rom.rom_data);
@@ -378,7 +378,7 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	bytes_written = fwrite(rom_high_buffer, sizeof(uint8_t), input_rom.rom_size, fp);
+	bytes_written = fwrite(rom_high_buffer, 1, input_rom.rom_size, fp);
 	if(bytes_written != input_rom.rom_size)
 	{
 		free(input_rom.rom_data);
@@ -406,7 +406,7 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	bytes_written = fwrite(rom_low_buffer, sizeof(uint8_t), input_rom.rom_size, fp);
+	bytes_written = fwrite(rom_low_buffer, 1, input_rom.rom_size, fp);
 	fclose(fp);
 
 	if(bytes_written != input_rom.rom_size)
@@ -493,7 +493,7 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	output_rom.rom_data = (uint8_t*)malloc(high_rom.rom_size * sizeof(uint8_t));
+	output_rom.rom_data = (uint8_t*)malloc(high_rom.rom_size);
 	if(!output_rom.rom_data)
 	{
 		printf("ERROR: Unable to allocate memory for output ROM buffer.\n");
@@ -668,7 +668,7 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		return 1;
 	}
 
-	bytes_written = fwrite(output_rom.rom_data, sizeof(uint8_t), output_rom.rom_size, fp);
+	bytes_written = fwrite(output_rom.rom_data, 1, output_rom.rom_size, fp);
 	fclose(fp);
 
 	if(bytes_written != output_rom.rom_size)
@@ -806,7 +806,7 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 		return 1;
 	}
 
-	bytes_written = fwrite(input_rom.rom_data, sizeof(uint8_t), input_rom.rom_size, fp);
+	bytes_written = fwrite(input_rom.rom_data, 1, input_rom.rom_size, fp);
 	fclose(fp);
 
 	if(bytes_written != input_rom.rom_size)
@@ -905,7 +905,7 @@ int crypt_rom(const bool encryption_state, const char* encryption_key_path, cons
 		return 1;
 	}
 
-	bytes_written = fwrite(input_rom.rom_data, sizeof(uint8_t), input_rom.rom_size, fp);
+	bytes_written = fwrite(input_rom.rom_data, 1, input_rom.rom_size, fp);
 	fclose(fp);
 
 	if(bytes_written != input_rom.rom_size)
@@ -990,7 +990,7 @@ int checksum_rom(const bool correct_checksum, const char* encryption_key_path, c
 					return 1;
 				}
 
-				bytes_written = fwrite(input_rom.rom_data, sizeof(uint8_t), input_rom.rom_size, fp);
+				bytes_written = fwrite(input_rom.rom_data, 1, input_rom.rom_size, fp);
 				fclose(fp);
 
 				if(bytes_written != input_rom.rom_size)
