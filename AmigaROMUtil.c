@@ -104,10 +104,14 @@ SOFTWARE.
 
 #endif // Platform
 
-#define AMIGA_256_ROM_HEADER 0x11114EF9
-#define AMIGA_512_ROM_HEADER 0x11144EF9
-#define AMIGA_EXT_ROM_HEADER 0x11144EF9
-#define AMIGA_512_REKICK_ROM_HEADER 0x11164EF9 //TODO: Properly detect size/handle these
+#define AMIGA_256_ROM_HEADER                 0x11114EF9
+#define AMIGA_256_ROM_HEADER_BYTESWAP        0x1111F94E
+#define AMIGA_512_ROM_HEADER                 0x11144EF9
+#define AMIGA_512_ROM_HEADER_BYTESWAP        0x1411F94E
+#define AMIGA_EXT_ROM_HEADER                 0x11144EF9
+#define AMIGA_EXT_ROM_HEADER_BYTESWAP        0x1411F94E
+#define AMIGA_512_REKICK_ROM_HEADER          0x11164EF9 //TODO: Properly detect size/handle these
+#define AMIGA_512_REKICK_ROM_HEADER_BYTESWAP 0x1611F94E //TODO: Properly detect size/handle these
 
 extern int sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, size_t databytes);
 
@@ -475,7 +479,7 @@ bool DetectKicketySplitAmigaROM(const ParsedAmigaROMData *amiga_rom)
 		return false;
 	}
 
-	return (be32toh(rom_data_32[131072]) == be32toh(AMIGA_256_ROM_HEADER));
+	return ((be32toh(rom_data_32[131072]) == be32toh(AMIGA_256_ROM_HEADER)) || (be32toh(rom_data_32[131072]) == be32toh(AMIGA_256_ROM_HEADER_BYTESWAP)));
 }
 
 // Detect which type of kickstart ROM a purported Kickstart ROM claims to be
@@ -487,9 +491,13 @@ char DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom)
 	const uint32_t *rom_data_32;
 
 	uint32_t amiga_256_header = be32toh(AMIGA_256_ROM_HEADER);
+	uint32_t amiga_256_header_byteswap = be32toh(AMIGA_256_ROM_HEADER_BYTESWAP);
 	uint32_t amiga_512_header = be32toh(AMIGA_512_ROM_HEADER);
+	uint32_t amiga_512_header_byteswap = be32toh(AMIGA_512_ROM_HEADER_BYTESWAP);
 	uint32_t amiga_ext_header = be32toh(AMIGA_EXT_ROM_HEADER);
+	uint32_t amiga_ext_header_byteswap = be32toh(AMIGA_EXT_ROM_HEADER_BYTESWAP);
 	uint32_t amiga_rekick_rom_header = be32toh(AMIGA_512_REKICK_ROM_HEADER);
+	uint32_t amiga_rekick_rom_header_byteswap = be32toh(AMIGA_512_REKICK_ROM_HEADER_BYTESWAP);
 	uint32_t rom_header;
 
 	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0)
@@ -508,22 +516,22 @@ char DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom)
 
 	if(amiga_rom->rom_size == 524288)
 	{
-		if(rom_header == amiga_512_header)
+		if((rom_header == amiga_512_header) || (rom_header == amiga_512_header_byteswap))
 		{
 			return '5';
 		}
 	}
 	else if(amiga_rom->rom_size == 262144)
 	{
-		if(rom_header == amiga_256_header)
+		if((rom_header == amiga_256_header) || (rom_header == amiga_256_header_byteswap))
 		{
 			return '2';
 		}
-		else if(rom_header == amiga_ext_header)
+		else if((rom_header == amiga_ext_header) || (rom_header == amiga_ext_header_byteswap))
 		{
 			return 'E';
 		}
-		else if(rom_header == amiga_rekick_rom_header)
+		else if((rom_header == amiga_rekick_rom_header) || (rom_header == amiga_rekick_rom_header_byteswap))
 		{
 			return 'R';
 		}
