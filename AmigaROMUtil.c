@@ -31,6 +31,7 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #if defined(__APPLE__) && defined(__MACH__)
 
@@ -42,9 +43,13 @@ SOFTWARE.
 #define htobe32(x) OSSwapHostToBigInt32(x)
 #define be32toh(x) OSSwapBigToHostInt32(x)
 
+#define _unlink(x) unlink(x)
+
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
 
 #include <sys/endian.h>
+
+#define _unlink(x) unlink(x)
 
 #elif defined(__OpenBSD__)
 
@@ -53,9 +58,13 @@ SOFTWARE.
 #define be16toh(x) betoh16(x)
 #define be32toh(x) betoh32(x)
 
+#define _unlink(x) unlink(x)
+
 #elif defined(__linux__) || defined(__CYGWIN__)
 
 #include <endian.h>
+
+#define _unlink(x) unlink(x)
 
 #elif defined(_WIN32) || defined(_WIN64)
 
@@ -79,6 +88,8 @@ SOFTWARE.
 #define htobe32(x) __builtin_bswap32(x)
 #define be32toh(x) __builtin_bswap32(x)
 
+#define _unlink(x) unlink(x)
+
 #endif // Compiler (Windows, Intel)
 
 #else // Architecture (Windows, ARM)
@@ -100,16 +111,13 @@ SOFTWARE.
 
 extern int sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, size_t databytes);
 
-// Returns a parsed ROM data struct, with the ROM data and size included.
-// If anything files, parsed_rom will be false.  If encrypted, the ROM
-// will be decrypted.
-ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_path)
+// Create and return a new and initialized struct.
+// Pointers are NOT allocated, but are NULL instead.
+ParsedAmigaROMData GetInitializedAmigaROM(void)
 {
-	FILE *fp;
-
 	ParsedAmigaROMData amiga_rom;
-	int seek_status;
 
+	amiga_rom.is_initialized = true;
 	amiga_rom.parsed_rom = false;
 	amiga_rom.rom_data = NULL;
 	amiga_rom.rom_size = 0;
@@ -125,6 +133,48 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 	amiga_rom.version = NULL;
 	amiga_rom.is_kickety_split = false;
 	amiga_rom.valid_footer = false;
+
+	return amiga_rom;
+}
+
+// Free all pointers which are expected to potentially be
+// allocated in a struct and sets the pointers to NULL,
+// and sets the rest of the struct to default values.
+void DestroyInitializedAmigaROM(ParsedAmigaROMData *amiga_rom)
+{
+	amiga_rom->is_initialized = false;
+	amiga_rom->parsed_rom = false;
+
+	if(amiga_rom->rom_data)
+	{
+		free(amiga_rom->rom_data);
+		amiga_rom->rom_data = NULL;
+	}
+
+	amiga_rom->rom_size = 0;
+	amiga_rom->validated_size = false;
+	amiga_rom->has_reset_vector = false;
+	amiga_rom->is_encrypted = false;
+	amiga_rom->can_decrypt = false;
+	amiga_rom->successfully_decrypted = false;
+	amiga_rom->is_byte_swapped = false;
+	amiga_rom->has_valid_checksum = false;
+	amiga_rom->header = 'U';
+	amiga_rom->type = 'U';
+	amiga_rom->version = NULL;
+	amiga_rom->is_kickety_split = false;
+	amiga_rom->valid_footer = false;
+}
+
+// Returns a parsed ROM data struct, with the ROM data and size included.
+// If anything files, parsed_rom will be false.  If encrypted, the ROM
+// will be decrypted.
+ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_path)
+{
+	FILE *fp;
+
+	ParsedAmigaROMData amiga_rom = GetInitializedAmigaROM();
+	int seek_status;
 
 	if(!rom_file_path)
 	{
@@ -966,23 +1016,91 @@ bool SetAmigaROMByteSwap(ParsedAmigaROMData *amiga_rom, const bool swap_bytes, c
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
 // Returns true if it succeeds, or false if it doesn't.
-bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_contents, uint8_t *rom_low_contents)
+bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_high, ParsedAmigaROMData *rom_low)
 {
+	uint8_t *test_ptr;
+
 	size_t i;
 
-	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0 || amiga_rom->rom_size % 2 != 0 || !rom_high_contents || !rom_low_contents)
+	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0 || amiga_rom->rom_size % 2 != 0 || !rom_high || !rom_low)
 	{
 		return false;
 	}
 
-	for(i = 0; i < amiga_rom->rom_size; i = i + 4)
+	if(rom_high->rom_data)
 	{
-		memcpy(&rom_high_contents[i / 2], &(amiga_rom->rom_data)[i], 2);
-		memcpy(&rom_low_contents[i / 2], &(amiga_rom->rom_data)[i + 2], 2);
+		test_ptr = realloc(rom_high->rom_data, amiga_rom->rom_size);
+		printf("fdsa\n");
+		if(!test_ptr)
+		{
+			return false;
+		}
+		else
+		{
+			rom_high->rom_data = test_ptr;
+			rom_high->rom_size = amiga_rom->rom_size;
+			test_ptr = NULL;
+		}
+	}
+	else
+	{
+		test_ptr = (uint8_t*)malloc(amiga_rom->rom_size);
+		if(!test_ptr)
+		{
+			return false;
+		}
+		else
+		{
+			rom_high->rom_data = test_ptr;
+			rom_high->rom_size = amiga_rom->rom_size;
+			test_ptr = NULL;
+		}
 	}
 
-	memcpy(&rom_high_contents[amiga_rom->rom_size / 2], &rom_high_contents[0], amiga_rom->rom_size / 2);
-	memcpy(&rom_low_contents[amiga_rom->rom_size / 2], &rom_low_contents[0], amiga_rom->rom_size / 2);
+	if(rom_low->rom_data)
+	{
+		printf("dddd\n");
+		printf("Low ROM: %p\n", (void*)rom_low);
+		printf("Low ROM data: %p\n", (void*)rom_low->rom_data);
+		test_ptr = realloc(rom_low->rom_data, amiga_rom->rom_size);
+		printf("asdf\n");
+		if(!test_ptr)
+		{
+			return false;
+		}
+		else
+		{
+			rom_low->rom_data = test_ptr;
+			rom_low->rom_size = amiga_rom->rom_size;
+			test_ptr = NULL;
+		}
+	}
+	else
+	{
+		test_ptr = (uint8_t*)malloc(amiga_rom->rom_size);
+		if(!test_ptr)
+		{
+			return false;
+		}
+		else
+		{
+			rom_low->rom_data = test_ptr;
+			rom_low->rom_size = amiga_rom->rom_size;
+			test_ptr = NULL;
+		}
+	}
+
+	for(i = 0; i < amiga_rom->rom_size; i = i + 4)
+	{
+		memcpy(&(rom_high->rom_data)[i / 2], &(amiga_rom->rom_data)[i], 2);
+		memcpy(&(rom_low->rom_data)[i / 2], &(amiga_rom->rom_data)[i + 2], 2);
+	}
+
+	memcpy(&(rom_high->rom_data)[amiga_rom->rom_size / 2], &(rom_high->rom_data)[0], amiga_rom->rom_size / 2);
+	memcpy(&(rom_low->rom_data)[amiga_rom->rom_size / 2], &(rom_low->rom_data)[0], amiga_rom->rom_size / 2);
+
+	ParseAmigaROMData(rom_high, NULL);
+	ParseAmigaROMData(rom_low, NULL);
 
 	return true;
 }
@@ -990,24 +1108,85 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_conten
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
 // Returns true if it succeeds, or false if it doesn't.
-bool MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_contents, const size_t split_rom_size, ParsedAmigaROMData *amiga_rom)
+bool MergeAmigaROM(const ParsedAmigaROMData *rom_high, const ParsedAmigaROMData *rom_low, ParsedAmigaROMData *amiga_rom)
 {
+	uint8_t *test_ptr;
+
 	size_t i;
 
-	if(!amiga_rom || !(amiga_rom->rom_data) || !rom_high_contents || !rom_low_contents || split_rom_size == 0 || split_rom_size % 4 != 0)
+	if(!amiga_rom || !rom_high || !(rom_high->rom_data) || !rom_low || !(rom_low->rom_data) || rom_high->rom_size != rom_low->rom_size || rom_high->rom_size == 0 || rom_high->rom_size % 4 != 0)
 	{
 		return false;
 	}
 
-	for(i = 0; i < split_rom_size / 4; i++)
+	if(amiga_rom->rom_data)
 	{
-		memcpy(&(amiga_rom->rom_data)[i * 4], &rom_high_contents[i * 2], 2);
-		memcpy(&(amiga_rom->rom_data)[(i * 4) + 2], &rom_low_contents[i * 2], 2);
+		test_ptr = realloc(amiga_rom->rom_data, rom_high->rom_size);
+		if(!test_ptr)
+		{
+			return false;
+		}
+		else
+		{
+			amiga_rom->rom_data = test_ptr;
+			amiga_rom->rom_size = rom_high->rom_size;
+		}
+	}
+	else
+	{
+		test_ptr = (uint8_t*)malloc(rom_high->rom_size);
+		if(!test_ptr)
+		{
+			return false;
+		}
+		else
+		{
+			amiga_rom->rom_data = test_ptr;
+			amiga_rom->rom_size = rom_high->rom_size;
+			test_ptr = NULL;
+		}
 	}
 
-	amiga_rom->rom_size = split_rom_size;
+	for(i = 0; i < rom_high->rom_size / 4; i++)
+	{
+		memcpy(&(amiga_rom->rom_data)[i * 4], &(rom_high->rom_data)[i * 2], 2);
+		memcpy(&(amiga_rom->rom_data)[(i * 4) + 2], &(rom_low->rom_data)[i * 2], 2);
+	}
+
+	amiga_rom->rom_size = rom_high->rom_size;
 
 	ParseAmigaROMData(amiga_rom, NULL);
+
+	return true;
+}
+
+// Write a ROM to disk and return a bool indicating whether the write
+// was successful or not.
+bool WriteAmigaROM(const ParsedAmigaROMData *amiga_rom, const char *rom_file_path)
+{
+	FILE *fp;
+
+	size_t bytes_written = 0;
+
+	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0 || !rom_file_path)
+	{
+		return false;
+	}
+
+	fp = fopen(rom_file_path, "wb");
+	if(!fp)
+	{
+		return false;
+	}
+
+	bytes_written = fwrite(amiga_rom->rom_data, 1, amiga_rom->rom_size, fp);
+	fclose(fp);
+
+	if(bytes_written != amiga_rom->rom_size)
+	{
+		_unlink(rom_file_path);
+		return false;
+	}
 
 	return true;
 }

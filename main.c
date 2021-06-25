@@ -247,12 +247,9 @@ void print_help(void)
 
 int split_rom(const bool swap, const bool unswap, const bool unconditional_swap, const char* encryption_key_path, const bool correct_checksum, const char* rom_high_path, const char* rom_low_path, const char* rom_input_path)
 {
-	FILE *fp;
-	uint8_t *rom_high_buffer;
-	uint8_t *rom_low_buffer;
-
-	size_t bytes_written = 0;
-	ParsedAmigaROMData input_rom;
+	ParsedAmigaROMData high_rom = GetInitializedAmigaROM();
+	ParsedAmigaROMData input_rom = GetInitializedAmigaROM();
+	ParsedAmigaROMData low_rom = GetInitializedAmigaROM();
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
 	if(!input_rom.parsed_rom)
@@ -269,30 +266,9 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 		if(input_rom.rom_data)
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 		}
 
-		return 1;
-	}
-
-	rom_high_buffer = (uint8_t*)malloc(input_rom.rom_size);
-	if(!rom_high_buffer)
-	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		printf("ERROR: Unable to allocate memory for High ROM buffer.\n");
-		return 1;
-	}
-
-	rom_low_buffer = (uint8_t*)malloc(input_rom.rom_size);
-	if(!rom_low_buffer)
-	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		free(rom_high_buffer);
-		rom_high_buffer = NULL;
-		printf("ERROR: Unable to allocate memory for Low ROM buffer.\n");
 		return 1;
 	}
 
@@ -325,12 +301,7 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 			}
 			else
 			{
-				free(input_rom.rom_data);
-				input_rom.rom_data = NULL;
-				free(rom_high_buffer);
-				rom_high_buffer = NULL;
-				free(rom_low_buffer);
-				rom_low_buffer = NULL;
+				DestroyInitializedAmigaROM(&input_rom);
 				printf("ERROR: Unable to correct source ROM checksum.\n");
 				return 1;
 			}
@@ -343,104 +314,60 @@ int split_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 	if((swap || unswap) && ((input_rom.type != 'U' || unconditional_swap) || SetAmigaROMByteSwap(&input_rom, swap, unswap, unconditional_swap) == 0))
 	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		free(rom_high_buffer);
-		rom_high_buffer = NULL;
-		free(rom_low_buffer);
-		rom_low_buffer = NULL;
+		DestroyInitializedAmigaROM(&input_rom);
 		printf("ERROR: Unable to perform conditional swap operation.  Aborting.\n");
 		return 1;
 	}
 
-	if(!SplitAmigaROM(&input_rom, rom_high_buffer, rom_low_buffer))
+	if(!SplitAmigaROM(&input_rom, &high_rom, &low_rom))
 	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		free(rom_high_buffer);
-		rom_high_buffer = NULL;
-		free(rom_low_buffer);
-		rom_low_buffer = NULL;
+		DestroyInitializedAmigaROM(&input_rom);
+
+		if(high_rom.rom_data)
+		{
+			DestroyInitializedAmigaROM(&high_rom);
+		}
+
+		if(low_rom.rom_data)
+		{
+			DestroyInitializedAmigaROM(&low_rom);
+		}
+
 		printf("ERROR: ROM split operation failed.  Aborting.\n");
 		return 1;
 	}
 
-	fp = fopen(rom_high_path, "wb");
-	if(!fp)
+	if(!WriteAmigaROM(&high_rom, rom_high_path))
 	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		free(rom_high_buffer);
-		rom_high_buffer = NULL;
-		free(rom_low_buffer);
-		rom_low_buffer = NULL;
-		printf("ERROR: Unable to open file for writing High ROM: %s\n", rom_high_path);
+		DestroyInitializedAmigaROM(&input_rom);
+		DestroyInitializedAmigaROM(&high_rom);
+		DestroyInitializedAmigaROM(&low_rom);
+		printf("ERROR: Unable to write High ROM to disk.  Aborting.\n");
 		return 1;
 	}
 
-	bytes_written = fwrite(rom_high_buffer, 1, input_rom.rom_size, fp);
-	if(bytes_written != input_rom.rom_size)
+	if(!WriteAmigaROM(&low_rom, rom_low_path))
 	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		free(rom_high_buffer);
-		rom_high_buffer = NULL;
-		free(rom_low_buffer);
-		rom_low_buffer = NULL;
-		printf("ERROR: Wrote %zu bytes when expected to write %zu bytes for ROM A.  Aborting.\n", bytes_written, input_rom.rom_size);
+		DestroyInitializedAmigaROM(&input_rom);
+		DestroyInitializedAmigaROM(&high_rom);
+		DestroyInitializedAmigaROM(&low_rom);
+		printf("ERROR: Unable to write Low ROM to disk.  Aborting.\n");
 		return 1;
 	}
 
-	fclose(fp);
-
-	fp = fopen(rom_low_path, "wb");
-	if(!fp)
-	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		free(rom_high_buffer);
-		rom_high_buffer = NULL;
-		free(rom_low_buffer);
-		rom_low_buffer = NULL;
-		printf("ERROR: Unable to open file for writing Low ROM: %s\n", rom_low_path);
-		return 1;
-	}
-
-	bytes_written = fwrite(rom_low_buffer, 1, input_rom.rom_size, fp);
-	fclose(fp);
-
-	if(bytes_written != input_rom.rom_size)
-	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		free(rom_high_buffer);
-		rom_high_buffer = NULL;
-		free(rom_low_buffer);
-		rom_low_buffer = NULL;
-		printf("ERROR: Wrote %zu bytes when expected to write %zu bytes for ROM B.  Aborting.\n", bytes_written, input_rom.rom_size);
-		return 1;
-	}
-
+	DestroyInitializedAmigaROM(&input_rom);
+	DestroyInitializedAmigaROM(&high_rom);
+	DestroyInitializedAmigaROM(&low_rom);
 	printf("Successfully wrote High and Low ROMs.\n");
-
-	free(input_rom.rom_data);
-	input_rom.rom_data = NULL;
-	free(rom_high_buffer);
-	rom_high_buffer = NULL;
-	free(rom_low_buffer);
-	rom_low_buffer = NULL;
 
 	return 0;
 }
 
 int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap, const bool encrypt_rom, const char* encryption_key_path, const bool correct_checksum, const char* rom_high_path, const char* rom_low_path, const char* rom_output_path)
 {
-	FILE *fp;
-
-	size_t bytes_written;
-	ParsedAmigaROMData high_rom;
-	ParsedAmigaROMData low_rom;
-	ParsedAmigaROMData output_rom;
+	ParsedAmigaROMData high_rom = GetInitializedAmigaROM();
+	ParsedAmigaROMData low_rom = GetInitializedAmigaROM();
+	ParsedAmigaROMData output_rom = GetInitializedAmigaROM();
 
 	high_rom = ReadAmigaROM(rom_high_path, encryption_key_path);
 	if(!high_rom.parsed_rom)
@@ -457,8 +384,7 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 		if(high_rom.rom_data)
 		{
-			free(high_rom.rom_data);
-			high_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&high_rom);
 		}
 
 		return 1;
@@ -479,11 +405,10 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 		if(low_rom.rom_data)
 		{
-			free(low_rom.rom_data);
-			low_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&low_rom);
 		}
 
-		free(high_rom.rom_data);
+		DestroyInitializedAmigaROM(&high_rom);
 		return 1;
 	}
 
@@ -492,19 +417,6 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		printf("ERROR: High and Low ROMs must be the same size to merge.\n");
 		return 1;
 	}
-
-	output_rom.rom_data = (uint8_t*)malloc(high_rom.rom_size);
-	if(!output_rom.rom_data)
-	{
-		printf("ERROR: Unable to allocate memory for output ROM buffer.\n");
-		free(high_rom.rom_data);
-		high_rom.rom_data = NULL;
-		free(low_rom.rom_data);
-		low_rom.rom_data = NULL;
-		return 1;
-	}
-
-	output_rom.rom_size = high_rom.rom_size;
 
 	if(high_rom.version == NULL)
 	{
@@ -549,36 +461,29 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 	if((swap || unswap) && ((high_rom.type != 'U' || unconditional_swap) && SetAmigaROMByteSwap(&high_rom, swap, unswap, unconditional_swap) == 0))
 	{
-		free(output_rom.rom_data);
-		output_rom.rom_data = NULL;
-		free(high_rom.rom_data);
-		high_rom.rom_data = NULL;
-		free(low_rom.rom_data);
-		low_rom.rom_data = NULL;
+		DestroyInitializedAmigaROM(&high_rom);
+		DestroyInitializedAmigaROM(&low_rom);
 		printf("ERROR: Unable to perform conditional swap operation for High ROM.  Aborting.\n");
 		return 1;
 	}
 
 	if((swap || unswap) && ((low_rom.type != 'U' || unconditional_swap) && SetAmigaROMByteSwap(&low_rom, swap, unswap, unconditional_swap) == 0))
 	{
-		free(output_rom.rom_data);
-		output_rom.rom_data = NULL;
-		free(high_rom.rom_data);
-		high_rom.rom_data = NULL;
-		free(low_rom.rom_data);
-		low_rom.rom_data = NULL;
+		DestroyInitializedAmigaROM(&high_rom);
+		DestroyInitializedAmigaROM(&low_rom);
 		printf("ERROR: Unable to perform conditional swap operation for Low ROM.  Aborting.\n");
 		return 1;
 	}
 
-	if(!MergeAmigaROM(high_rom.rom_data, low_rom.rom_data, high_rom.rom_size, &output_rom))
+	if(!MergeAmigaROM(&high_rom, &low_rom, &output_rom))
 	{
-		free(output_rom.rom_data);
-		output_rom.rom_data = NULL;
-		free(high_rom.rom_data);
-		high_rom.rom_data = NULL;
-		free(low_rom.rom_data);
-		low_rom.rom_data = NULL;
+		if(output_rom.rom_data)
+		{
+			DestroyInitializedAmigaROM(&output_rom);
+		}
+
+		DestroyInitializedAmigaROM(&high_rom);
+		DestroyInitializedAmigaROM(&low_rom);
 		printf("ERROR: ROM merge operation failed.  Aborting.\n");
 		return 1;
 	}
@@ -599,12 +504,9 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 			}
 			else
 			{
-				free(output_rom.rom_data);
-				output_rom.rom_data = NULL;
-				free(high_rom.rom_data);
-				high_rom.rom_data = NULL;
-				free(low_rom.rom_data);
-				low_rom.rom_data = NULL;
+				DestroyInitializedAmigaROM(&output_rom);
+				DestroyInitializedAmigaROM(&high_rom);
+				DestroyInitializedAmigaROM(&low_rom);
 				printf("ERROR: Unable to correct merged ROM checksum.\n");
 				return 1;
 			}
@@ -619,12 +521,9 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 	{
 		if(encryption_key_path == NULL)
 		{
-			free(output_rom.rom_data);
-			output_rom.rom_data = NULL;
-			free(high_rom.rom_data);
-			high_rom.rom_data = NULL;
-			free(low_rom.rom_data);
-			low_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&output_rom);
+			DestroyInitializedAmigaROM(&high_rom);
+			DestroyInitializedAmigaROM(&low_rom);
 			printf("ERROR: Encrypting a ROM requires specifying an encryption key.\n");
 			return 1;
 		}
@@ -640,12 +539,9 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 
 		if(!CryptAmigaROM(&output_rom, true, encryption_key_path))
 		{
-			free(output_rom.rom_data);
-			output_rom.rom_data = NULL;
-			free(high_rom.rom_data);
-			high_rom.rom_data = NULL;
-			free(low_rom.rom_data);
-			low_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&output_rom);
+			DestroyInitializedAmigaROM(&high_rom);
+			DestroyInitializedAmigaROM(&low_rom);
 			printf("ERROR: Unable to access ROM encryption key.\n");
 			return 1;
 		}
@@ -655,53 +551,27 @@ int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap,
 		}
 	}
 
-	fp = fopen(rom_output_path, "wb");
-	if(!fp)
+	if(!WriteAmigaROM(&output_rom, rom_output_path))
 	{
-		free(output_rom.rom_data);
-		output_rom.rom_data = NULL;
-		free(high_rom.rom_data);
-		high_rom.rom_data = NULL;
-		free(low_rom.rom_data);
-		low_rom.rom_data = NULL;
-		printf("ERROR: Unable to open file for writing merged ROM: %s\n", rom_output_path);
+		DestroyInitializedAmigaROM(&output_rom);
+		DestroyInitializedAmigaROM(&high_rom);
+		DestroyInitializedAmigaROM(&low_rom);
+		printf("ERROR: Unable to write merged ROM to disk.  Aborting.");
 		return 1;
 	}
 
-	bytes_written = fwrite(output_rom.rom_data, 1, output_rom.rom_size, fp);
-	fclose(fp);
-
-	if(bytes_written != output_rom.rom_size)
-	{
-		free(output_rom.rom_data);
-		output_rom.rom_data = NULL;
-		free(high_rom.rom_data);
-		high_rom.rom_data = NULL;
-		free(low_rom.rom_data);
-		low_rom.rom_data = NULL;
-		printf("ERROR: Wrote %zu bytes when expected to write %zu bytes for merged ROM.  Aborting.\n", bytes_written, output_rom.rom_size);
-		return 1;
-	}
-
+	DestroyInitializedAmigaROM(&output_rom);
+	DestroyInitializedAmigaROM(&high_rom);
+	DestroyInitializedAmigaROM(&low_rom);
 	printf("Successfully wrote merged ROM.\n");
-
-	free(output_rom.rom_data);
-	output_rom.rom_data = NULL;
-	free(high_rom.rom_data);
-	high_rom.rom_data = NULL;
-	free(low_rom.rom_data);
-	low_rom.rom_data = NULL;
 
 	return 0;
 }
 
 int swap_rom(const bool swap_state, const bool unconditional_swap, const bool encrypt_rom, const char* encryption_key_path, const bool correct_checksum, const char* rom_input_path, const char* rom_output_path)
 {
-	FILE *fp;
-
-	size_t bytes_written = 0;
 	size_t encrypted_input_rom_size = 0;
-	ParsedAmigaROMData input_rom;
+	ParsedAmigaROMData input_rom = GetInitializedAmigaROM();
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
 	if(!input_rom.parsed_rom)
@@ -718,8 +588,7 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 
 		if(input_rom.rom_data != NULL)
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 		}
 
 		return 1;
@@ -736,8 +605,7 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 
 	if(SetAmigaROMByteSwap(&input_rom, swap_state, !swap_state, unconditional_swap) == 0)
 	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
+		DestroyInitializedAmigaROM(&input_rom);
 		printf("ERROR: Unable to perform conditional swap operation for ROM.  Aborting.\n");
 		return 1;
 	}
@@ -756,8 +624,7 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 			}
 			else
 			{
-				free(input_rom.rom_data);
-				input_rom.rom_data = NULL;
+				DestroyInitializedAmigaROM(&input_rom);
 				printf("ERROR: Unable to correct checksum for ROM.  Aborting.\n");
 				return 1;
 			}
@@ -772,8 +639,7 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 	{
 		if(encryption_key_path == NULL)
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 			printf("ERROR: Encrypting a ROM requires specifying an encryption key.\n");
 			return 1;
 		}
@@ -785,8 +651,7 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 
 		if(!CryptAmigaROM(&input_rom, true, encryption_key_path))
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 			printf("ERROR: Unable to access ROM encryption key.\n");
 			return 1;
 		}
@@ -797,42 +662,24 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 		}
 	}
 
-	fp = fopen(rom_output_path, "wb");
-	if(!fp)
+	if(!WriteAmigaROM(&input_rom, rom_output_path))
 	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		printf("ERROR: Unable to open file for writing swapped ROM: %s\n", rom_output_path);
+		DestroyInitializedAmigaROM(&input_rom);
+		printf("ERROR: Unable to write swapped ROM to disk.\n");
 		return 1;
 	}
 
-	bytes_written = fwrite(input_rom.rom_data, 1, input_rom.rom_size, fp);
-	fclose(fp);
-
-	if(bytes_written != input_rom.rom_size)
-	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		printf("ERROR: Wrote %zu bytes when expected to write %zu bytes for swapped ROM.  Aborting.\n", bytes_written, input_rom.rom_size);
-		return 1;
-	}
-
+	DestroyInitializedAmigaROM(&input_rom);
 	printf("Successfully wrote swapped ROM.\n");
-
-	free(input_rom.rom_data);
-	input_rom.rom_data = NULL;
 
 	return 0;
 }
 
 int crypt_rom(const bool encryption_state, const char* encryption_key_path, const char* rom_input_path, const char* rom_output_path)
 {
-	FILE *fp;
-
-	size_t bytes_written = 0;
 	size_t encrypted_input_rom_size = 0;
 
-	ParsedAmigaROMData input_rom;
+	ParsedAmigaROMData input_rom = GetInitializedAmigaROM();
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
 	if(!input_rom.parsed_rom)
@@ -849,8 +696,7 @@ int crypt_rom(const bool encryption_state, const char* encryption_key_path, cons
 
 		if(input_rom.rom_data != NULL)
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 		}
 
 		return 1;
@@ -876,16 +722,14 @@ int crypt_rom(const bool encryption_state, const char* encryption_key_path, cons
 	{
 		if(input_rom.is_encrypted)
 		{
+			DestroyInitializedAmigaROM(&input_rom);
 			printf("ERROR: Encrypting with the same key used to decrypt the ROM.\n");
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
 			return 1;
 		}
 
 		if(!CryptAmigaROM(&input_rom, true, encryption_key_path))
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 			printf("ERROR: Unable to access ROM encryption key.\n");
 			return 1;
 		}
@@ -896,26 +740,23 @@ int crypt_rom(const bool encryption_state, const char* encryption_key_path, cons
 		}
 	}
 
-	fp = fopen(rom_output_path, "wb");
-	if(!fp)
+	if(!WriteAmigaROM(&input_rom, rom_output_path))
 	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		printf("ERROR: Unable to open file for writing swapped ROM: %s\n", rom_output_path);
+		DestroyInitializedAmigaROM(&input_rom);
+
+		if(encryption_state)
+		{
+			printf("ERROR: Unable to write encrypted ROM to disk.\n");
+		}
+		else
+		{
+			printf("ERROR: Unable to write decrypted ROM to disk.\n");
+		}
+
 		return 1;
 	}
 
-	bytes_written = fwrite(input_rom.rom_data, 1, input_rom.rom_size, fp);
-	fclose(fp);
-
-	if(bytes_written != input_rom.rom_size)
-	{
-		free(input_rom.rom_data);
-		input_rom.rom_data = NULL;
-		printf("ERROR: Wrote %zu bytes when expected to write %zu bytes for swapped ROM.  Aborting.\n", bytes_written, input_rom.rom_size);
-		return 1;
-	}
-
+	DestroyInitializedAmigaROM(&input_rom);
 	if(encryption_state)
 	{
 		printf("Successfully wrote encrypted ROM.\n");
@@ -925,17 +766,11 @@ int crypt_rom(const bool encryption_state, const char* encryption_key_path, cons
 		printf("Successfully wrote decrypted ROM.\n");
 	}
 
-	free(input_rom.rom_data);
-	input_rom.rom_data = NULL;
-
 	return 0;
 }
 
 int checksum_rom(const bool correct_checksum, const char* encryption_key_path, const char* rom_input_path, const char* rom_output_path)
 {
-	FILE *fp;
-
-	size_t bytes_written = 0;
 	ParsedAmigaROMData input_rom;
 
 	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
@@ -953,8 +788,7 @@ int checksum_rom(const bool correct_checksum, const char* encryption_key_path, c
 
 		if(input_rom.rom_data != NULL)
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 		}
 
 		return 1;
@@ -981,23 +815,10 @@ int checksum_rom(const bool correct_checksum, const char* encryption_key_path, c
 			{
 				printf("Corrected ROM checksum.\n");
 
-				fp = fopen(rom_output_path, "wb");
-				if(!fp)
+				if(!WriteAmigaROM(&input_rom, rom_output_path))
 				{
-					free(input_rom.rom_data);
-					input_rom.rom_data = NULL;
-					printf("ERROR: Unable to open file for writing corrected ROM: %s\n", rom_output_path);
-					return 1;
-				}
-
-				bytes_written = fwrite(input_rom.rom_data, 1, input_rom.rom_size, fp);
-				fclose(fp);
-
-				if(bytes_written != input_rom.rom_size)
-				{
-					free(input_rom.rom_data);
-					input_rom.rom_data = NULL;
-					printf("ERROR: Wrote %zu bytes when expected to write %zu bytes for corrected ROM.  Aborting.\n", bytes_written, input_rom.rom_size);
+					DestroyInitializedAmigaROM(&input_rom);
+					printf("ERROR: Unable to write corrected ROM to disk.\n");
 					return 1;
 				}
 
@@ -1005,23 +826,20 @@ int checksum_rom(const bool correct_checksum, const char* encryption_key_path, c
 			}
 			else
 			{
-				free(input_rom.rom_data);
-				input_rom.rom_data = NULL;
+				DestroyInitializedAmigaROM(&input_rom);
 				printf("ERROR: Unable to correct ROM checksum.\n");
 				return 1;
 			}
 		}
 		else
 		{
-			free(input_rom.rom_data);
-			input_rom.rom_data = NULL;
+			DestroyInitializedAmigaROM(&input_rom);
 			printf("ERROR: ROM checksum is invalid.\n");
 			return 1;
 		}
 	}
 
-	free(input_rom.rom_data);
-	input_rom.rom_data = NULL;
+	DestroyInitializedAmigaROM(&input_rom);
 
 	return 0;
 }

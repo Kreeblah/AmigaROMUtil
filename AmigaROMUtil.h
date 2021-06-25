@@ -31,6 +31,7 @@ SOFTWARE.
 #include <stdint.h>
 
 typedef struct {
+	bool is_initialized;
 	bool parsed_rom;
 	uint8_t *rom_data;
 	size_t rom_size;
@@ -47,6 +48,14 @@ typedef struct {
 	bool is_kickety_split;
 	bool valid_footer;
 } ParsedAmigaROMData;
+
+// Free all pointers which are expected to potentially be
+// allocated in a struct and sets the pointers to NULL.
+ParsedAmigaROMData GetInitializedAmigaROM(void);
+
+// Free all pointers which are expected to potentially be
+// allocated in a struct.
+void DestroyInitializedAmigaROM(ParsedAmigaROMData *amiga_rom);
 
 // Returns a parsed ROM data struct, with the ROM data and size included.
 // If anything files, parsed_rom will be false.  If encrypted, the ROM
@@ -145,10 +154,14 @@ bool SetAmigaROMByteSwap(ParsedAmigaROMData *amiga_rom, const bool swap_bytes, c
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, uint8_t *rom_high_contents, uint8_t *rom_low_contents);
+bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_high, ParsedAmigaROMData *rom_low);
 
 // For this method, ROM A and ROM B should each be the same size as the merged ROM.
 // Each A and B ROM gets the same contents repeated twice.
-bool MergeAmigaROM(const uint8_t *rom_high_contents, const uint8_t *rom_low_contents, const size_t split_rom_size, ParsedAmigaROMData *amiga_rom);
+bool MergeAmigaROM(const ParsedAmigaROMData *rom_high, const ParsedAmigaROMData *rom_low, ParsedAmigaROMData *amiga_rom);
+
+// Write a ROM to disk and return a bool indicating whether the write
+// was successful or not.
+bool WriteAmigaROM(const ParsedAmigaROMData *amiga_rom, const char *rom_file_path);
 
 #endif
