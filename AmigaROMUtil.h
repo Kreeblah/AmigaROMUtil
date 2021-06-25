@@ -42,7 +42,7 @@ typedef struct {
 	bool successfully_decrypted;
 	bool is_byte_swapped;
 	bool has_valid_checksum;
-	char header;
+	uint8_t header;
 	char type;
 	const char *version;
 	bool is_kickety_split;
@@ -96,9 +96,17 @@ bool DetectKicketySplitAmigaROM(const ParsedAmigaROMData *amiga_rom);
 
 // Detect which type of kickstart ROM a purported Kickstart ROM claims to be
 // based on its header and size.  If this data is not consistent, or is unknown,
-// the method returns 'U'.  Otherwise, it returns '5' for a 512k ROM, '2' for a
-// 256k ROM, 'E' for an extended ROM, or 'R' for a "ReKick" ROM.
-char DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom);
+// the method returns 0x00.  Otherwise, the lower seven bits will determine what
+// type of Kickstart ROM this is, according to the following table:
+//
+// 0x01: 256KB ROM
+// 0x02: 512KB ROM
+// 0x03: Extended ROM
+// 0x04: "ReKick" ROM
+//
+// If the ROM is byte-swapped, then the topmost bit will be a 1, with the rest
+// of the seven bits as the table above.
+uint8_t DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom);
 
 // Returns an unsigned 32-bit integer with the checksum for the ROM.
 // This checksum is used by Amigas to validate whether a ROM is undamaged,
@@ -144,7 +152,8 @@ bool DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size
 
 // 0 indicates the ROM is not byte swapped (the ROM is for emulators)
 // 1 indicates the ROM is byte swapped (the ROM is for physical ICs)
-// -1 indicates the ROM is not an Amiga ROM known to this library
+// -1 indicates the ROM is not an Amiga ROM known to this library,
+//    and the header is not indicative of its byte swappiness.
 int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom);
 
 // If swap_unconditionally is true, the method will swap the ROM's bytes regardless of whether

@@ -43,13 +43,9 @@ SOFTWARE.
 #define htobe32(x) OSSwapHostToBigInt32(x)
 #define be32toh(x) OSSwapBigToHostInt32(x)
 
-#define _unlink(x) unlink(x)
-
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
 
 #include <sys/endian.h>
-
-#define _unlink(x) unlink(x)
 
 #elif defined(__OpenBSD__)
 
@@ -58,13 +54,9 @@ SOFTWARE.
 #define be16toh(x) betoh16(x)
 #define be32toh(x) betoh32(x)
 
-#define _unlink(x) unlink(x)
-
 #elif defined(__linux__) || defined(__CYGWIN__)
 
 #include <endian.h>
-
-#define _unlink(x) unlink(x)
 
 #elif defined(_WIN32) || defined(_WIN64)
 
@@ -87,8 +79,6 @@ SOFTWARE.
 
 #define htobe32(x) __builtin_bswap32(x)
 #define be32toh(x) __builtin_bswap32(x)
-
-#define _unlink(x) unlink(x)
 
 #endif // Compiler (Windows, Intel)
 
@@ -132,7 +122,7 @@ ParsedAmigaROMData GetInitializedAmigaROM(void)
 	amiga_rom.successfully_decrypted = false;
 	amiga_rom.is_byte_swapped = false;
 	amiga_rom.has_valid_checksum = false;
-	amiga_rom.header = 'U';
+	amiga_rom.header = 0;
 	amiga_rom.type = 'U';
 	amiga_rom.version = NULL;
 	amiga_rom.is_kickety_split = false;
@@ -163,7 +153,7 @@ void DestroyInitializedAmigaROM(ParsedAmigaROMData *amiga_rom)
 	amiga_rom->successfully_decrypted = false;
 	amiga_rom->is_byte_swapped = false;
 	amiga_rom->has_valid_checksum = false;
-	amiga_rom->header = 'U';
+	amiga_rom->header = 0;
 	amiga_rom->type = 'U';
 	amiga_rom->version = NULL;
 	amiga_rom->is_kickety_split = false;
@@ -252,7 +242,7 @@ void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path)
 	amiga_rom->has_reset_vector = false;
 	amiga_rom->is_byte_swapped = false;
 	amiga_rom->has_valid_checksum = false;
-	amiga_rom->header = 'U';
+	amiga_rom->header = 0;
 	amiga_rom->type = 'U';
 	amiga_rom->version = NULL;
 	amiga_rom->is_kickety_split = false;
@@ -484,9 +474,17 @@ bool DetectKicketySplitAmigaROM(const ParsedAmigaROMData *amiga_rom)
 
 // Detect which type of kickstart ROM a purported Kickstart ROM claims to be
 // based on its header and size.  If this data is not consistent, or is unknown,
-// the method returns 'U'.  Otherwise, it returns '5' for a 512k ROM, '2' for a
-// 256k ROM, 'E' for an extended ROM, or 'R' for a "ReKick" ROM.
-char DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom)
+// the method returns 0x00.  Otherwise, the lower seven bits will determine what
+// type of Kickstart ROM this is, according to the following table:
+//
+// 0x01: 256KB ROM
+// 0x02: 512KB ROM
+// 0x03: Extended ROM
+// 0x04: "ReKick" ROM
+//
+// If the ROM is byte-swapped, then the topmost bit will be a 1, with the rest
+// of the seven bits as the table above.
+uint8_t DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom)
 {
 	const uint32_t *rom_data_32;
 
@@ -502,14 +500,14 @@ char DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom)
 
 	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0)
 	{
-		return 'U';
+		return 0x00;
 	}
 
 	rom_data_32 = (const uint32_t*)(amiga_rom->rom_data);
 
 	if(amiga_rom->rom_size < 4)
 	{
-		return 'U';
+		return 0x00;
 	}
 
 	rom_header = be32toh(rom_data_32[0]);
@@ -518,26 +516,54 @@ char DetectAmigaKickstartROMTypeFromHeader(const ParsedAmigaROMData *amiga_rom)
 	{
 		if((rom_header == amiga_512_header) || (rom_header == amiga_512_header_byteswap))
 		{
-			return '5';
+			if(rom_header == amiga_512_header)
+			{
+				return 0x02;
+			}
+			else
+			{
+				return 0x02 | 0x80;
+			}
 		}
 	}
 	else if(amiga_rom->rom_size == 262144)
 	{
 		if((rom_header == amiga_256_header) || (rom_header == amiga_256_header_byteswap))
 		{
-			return '2';
+			if(rom_header == amiga_256_header)
+			{
+				return 0x01;
+			}
+			else
+			{
+				return 0x01 | 0x80;
+			}
 		}
 		else if((rom_header == amiga_ext_header) || (rom_header == amiga_ext_header_byteswap))
 		{
-			return 'E';
+			if(rom_header == amiga_ext_header)
+			{
+				return 0x03;
+			}
+			else
+			{
+				return 0x03 | 0x80;
+			}
 		}
 		else if((rom_header == amiga_rekick_rom_header) || (rom_header == amiga_rekick_rom_header_byteswap))
 		{
-			return 'R';
+			if(rom_header == amiga_rekick_rom_header)
+			{
+				return 0x04;
+			}
+			else
+			{
+				return 0x04 | 0x80;
+			}
 		}
 	}
 
-	return 'U';
+	return 0x00;
 }
 
 // Returns an unsigned 32-bit integer with the checksum for the ROM.
@@ -921,12 +947,14 @@ bool DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size
 
 // 0 indicates the ROM is not byte swapped (the ROM is for emulators)
 // 1 indicates the ROM is byte swapped (the ROM is for physical ICs)
-// -1 indicates the ROM is not an Amiga ROM known to this library
+// -1 indicates the ROM is not an Amiga ROM known to this library,
+//    and the header is not indicative of its byte swappiness.
 int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 {
 	uint8_t *digest;
 	char *hexdigest;
 
+	uint8_t rom_type = 0;
 	size_t i;
 	size_t rom_quantity = sizeof(AMIGA_ROM_INFO) / sizeof(AmigaROMInfo);
 
@@ -974,6 +1002,18 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 	digest = NULL;
 	free(hexdigest);
 	hexdigest = NULL;
+
+	rom_type = DetectAmigaKickstartROMTypeFromHeader(amiga_rom);
+
+	if((rom_type & 0x80) == 0x80)
+	{
+		return 1;
+	}
+	else if(rom_type != 0)
+	{
+		return 0;
+	}
+
 	return -1;
 }
 
@@ -1192,7 +1232,14 @@ bool WriteAmigaROM(const ParsedAmigaROMData *amiga_rom, const char *rom_file_pat
 
 	if(bytes_written != amiga_rom->rom_size)
 	{
-		_unlink(rom_file_path);
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
+		unlink(rom_file_path);
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 		return false;
 	}
 
