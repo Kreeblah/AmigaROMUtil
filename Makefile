@@ -3,8 +3,8 @@ LIB_SRCS = AmigaROMUtil.c teeny-sha1.c
 MAIN_SRC = main.c
 LIB_OBJS = $(LIB_SRCS:.c=.o)
 MAIN_OBJ = $(MAIN_SRC:.c=.o)
-MAIN = AmigaROMUtil
 ifneq ($(OS),Windows_NT)
+	MAIN = AmigaROMUtil
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Darwin)
 		SHARED_LIB = libamigarom.dylib
@@ -15,6 +15,7 @@ ifneq ($(OS),Windows_NT)
 	endif
 	STATIC_LIB = libamigarom.a
 else
+	MAIN = AmigaROMUtil.exe
 	SHARED_LIB = amigarom.dll
 	STATIC_LIB = amigarom.lib
 endif
