@@ -18,6 +18,7 @@ else
 	MAIN = AmigaROMUtil.exe
 	SHARED_LIB = amigarom.dll
 	STATIC_LIB = amigarom.lib
+	SO_LIB_CMD = $(CC) $(CFLAGS) -o $(SHARED_LIB) $(LIB_OBJS) -shared
 endif
 
 all:			$(SHARED_LIB) $(STATIC_LIB) $(MAIN)
