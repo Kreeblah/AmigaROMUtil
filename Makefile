@@ -13,8 +13,11 @@ ifneq ($(OS),Windows_NT)
 		SHARED_LIB = libamigarom.so
 		SO_LIB_CMD = $(CC) $(CFLAGS) -o $(SHARED_LIB) $(LIB_OBJS) -shared
 	endif
+	STATIC_LIB = libamigarom.a
+else
+	SHARED_LIB = amigarom.dll
+	STATIC_LIB = amigarom.lib
 endif
-STATIC_LIB = libamigarom.a
 
 all:			$(SHARED_LIB) $(STATIC_LIB) $(MAIN)
 
