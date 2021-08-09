@@ -407,7 +407,31 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 		rom_has_valid_checksum = NULL;
 		return;
 	}
-	snprintf(rom_header_info, 64, "ROM type indicated by header:\t%u", amiga_rom->header);
+
+	switch(amiga_rom->header)
+	{
+		case 0:
+			snprintf(rom_header_info, 64, "ROM type indicated by header:\tNot an Amiga ROM");
+			break;
+		case 1:
+			snprintf(rom_header_info, 64, "ROM type indicated by header:\t256KB Kickstart ROM");
+			break;
+		case 2:
+			snprintf(rom_header_info, 64, "ROM type indicated by header:\t512KB Kickstart ROM");
+			break;
+		case 3:
+			snprintf(rom_header_info, 64, "ROM type indicated by header:\tExtended ROM");
+			break;
+		case 4:
+			snprintf(rom_header_info, 64, "ROM type indicated by header:\t\"ReKick\" ROM");
+			break;
+		case 5:
+			snprintf(rom_header_info, 64, "ROM type indicated by header:\tAmbiguous");
+			break;
+		default:
+			snprintf(rom_header_info, 64, "ROM type indicated by header:\tUnknown");
+			break;
+	}
 
 	rom_type = (char *)malloc(64);
 	if(!rom_type)
@@ -432,7 +456,26 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 		rom_header_info = NULL;
 		return;
 	}
-	snprintf(rom_type, 64, "ROM type:\t\t\t%c", amiga_rom->type);
+
+	switch(amiga_rom->type)
+	{
+		case 'A':
+			snprintf(rom_type, 64, "ROM type:\t\t\tKickstart Hi ROM");
+			break;
+		case 'B':
+			snprintf(rom_type, 64, "ROM type:\t\t\tKickstart Lo ROM");
+			break;
+		case 'M':
+			snprintf(rom_type, 64, "ROM type:\t\t\tMerged Kickstart ROM");
+			break;
+		case 'O':
+			snprintf(rom_type, 64, "ROM type:\t\t\tNon-Kickstart Amiga ROM");
+			break;
+		case 'U':
+		default:
+			snprintf(rom_type, 64, "ROM type:\t\t\tUnknown ROM");
+			break;
+	}
 
 	rom_version = (char *)malloc(64);
 	if(!rom_version)
@@ -488,7 +531,15 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 		rom_version = NULL;
 		return;
 	}
-	snprintf(embedded_rom_major_version, 64, "ROM major version number:\t%u", amiga_rom->major_version);
+
+	if(amiga_rom->major_version != 0xffff)
+	{
+		snprintf(embedded_rom_major_version, 64, "ROM major version number:\t%u", amiga_rom->major_version);
+	}
+	else
+	{
+		snprintf(embedded_rom_major_version, 64, "ROM major version number:\tUnknown");
+	}
 
 	embedded_rom_minor_version = (char *)malloc(64);
 	if(!embedded_rom_minor_version)
