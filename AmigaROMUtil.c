@@ -705,6 +705,39 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 	snprintf(output_string, string_length, "%s%s\n", output_string, detected_embedded_rom_version);
 	snprintf(output_string, string_length, "%s%s\n", output_string, is_kickety_split);
 	snprintf(output_string, string_length, "%s%s\n", output_string, has_valid_footer);
+
+	free(successfully_parsed);
+	successfully_parsed = NULL;
+	free(rom_size_validated);
+	rom_size_validated = NULL;
+	free(has_reset_vector);
+	has_reset_vector = NULL;
+	free(rom_is_encrypted);
+	rom_is_encrypted = NULL;
+	free(can_decrypt_rom);
+	can_decrypt_rom = NULL;
+	free(successfully_decrypted_rom);
+	successfully_decrypted_rom = NULL;
+	free(rom_is_byte_swapped);
+	rom_is_byte_swapped = NULL;
+	free(rom_has_valid_checksum);
+	rom_has_valid_checksum = NULL;
+	free(rom_header_info);
+	rom_header_info = NULL;
+	free(rom_type);
+	rom_type = NULL;
+	free(rom_version);
+	rom_version = NULL;
+	free(embedded_rom_major_version);
+	embedded_rom_major_version = NULL;
+	free(embedded_rom_minor_version);
+	embedded_rom_minor_version = NULL;
+	free(detected_embedded_rom_version);
+	detected_embedded_rom_version = NULL;
+	free(is_kickety_split);
+	is_kickety_split = NULL;
+	free(has_valid_footer);
+	has_valid_footer = NULL;
 }
 
 // Parses and validates the data in the Amiga ROM updates the struct
