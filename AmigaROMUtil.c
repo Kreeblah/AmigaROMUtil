@@ -969,7 +969,7 @@ bool DetectKicketySplitAmigaROM(const ParsedAmigaROMData *amiga_rom)
 		return false;
 	}
 
-	return ((be32toh(rom_data_32[131072]) == be32toh(AMIGA_256_ROM_HEADER)) || (be32toh(rom_data_32[131072]) == be32toh(AMIGA_256_ROM_HEADER_BYTESWAP)));
+	return ((be32toh(rom_data_32[131072]) == AMIGA_256_ROM_HEADER) || (be32toh(rom_data_32[131072]) == AMIGA_256_ROM_HEADER_BYTESWAP));
 }
 
 // Detect which type of kickstart ROM a purported Kickstart ROM claims to be
