@@ -45,6 +45,9 @@ typedef struct {
 	uint8_t header;
 	char type;
 	const char *version;
+	uint16_t major_version;
+	uint16_t minor_version;
+	const char *major_minor_version;
 	bool is_kickety_split;
 	bool valid_footer;
 } ParsedAmigaROMData;
@@ -61,6 +64,10 @@ void DestroyInitializedAmigaROM(ParsedAmigaROMData *amiga_rom);
 // If anything files, parsed_rom will be false.  If encrypted, the ROM
 // will be decrypted.
 ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_path);
+
+// Detect whether a ROM is an Amiga kickstart ROM based on size, header, reset vector,
+// magic, and footer.
+bool IsAmigaROM(const ParsedAmigaROMData *amiga_rom);
 
 // Puts ROM info data into output_string
 void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string, const size_t string_length);
@@ -81,6 +88,18 @@ bool ValidateAmigaROMResetVector(const ParsedAmigaROMData *amiga_rom);
 // Returns NULL for failure, else a string indicating the ROM version
 const char* DetectAmigaROMVersion(const ParsedAmigaROMData *amiga_rom);
 
+// Detects the major version in the Amiga ROM header
+// Returns 0 if the ROM is not detects as an Amiga ROM
+uint16_t DetectAmigaMajorROMVersion(const ParsedAmigaROMData *amiga_rom);
+
+// Detects the minor version in the Amiga ROM header
+// Returns 0 if the ROM is not detects as an Amiga ROM
+uint16_t DetectAmigaMinorROMVersion(const ParsedAmigaROMData *amiga_rom);
+
+// Returns a version string based on the major and minor versions in the Amiga ROM header
+// Returns NULL if the ROM is not detects as an Amiga ROM or the version is unknown
+const char* DetectAmigaMajorMinorROMVersion(const ParsedAmigaROMData *amiga_rom);
+
 // Returns a character indicating the type of ROM detected based on the SHA1 hash
 // Valid return values are:
 // A - Kickstart Hi/U34 ROM
@@ -99,10 +118,12 @@ bool DetectKicketySplitAmigaROM(const ParsedAmigaROMData *amiga_rom);
 // the method returns 0x00.  Otherwise, the lower seven bits will determine what
 // type of Kickstart ROM this is, according to the following table:
 //
+// 0x00: Not an Amiga ROM
 // 0x01: 256KB ROM
 // 0x02: 512KB ROM
 // 0x03: Extended ROM
 // 0x04: "ReKick" ROM
+// 0x05: Ambiguous (may or may not be an Amiga ROM of another type)
 //
 // If the ROM is byte-swapped, then the topmost bit will be a 1, with the rest
 // of the seven bits as the table above.

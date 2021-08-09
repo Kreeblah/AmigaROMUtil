@@ -33,6 +33,7 @@ SOFTWARE.
 #include <unistd.h>
 
 void print_help(void);
+int print_rom_info(const char* encryption_key_path, const char* rom_input_path);
 int split_rom(const bool swap, const bool unswap, const bool unconditional_swap, const char* encryption_key_path, const bool correct_checksum, const char* rom_high_path, const char* rom_low_path, const char* rom_input_path);
 int merge_rom(const bool swap, const bool unswap, const bool unconditional_swap, const bool encrypt_rom, const char* encryption_key_path, const bool correct_checksum, const char* rom_high_path, const char* rom_low_path, const char* rom_output_path);
 int swap_rom(const bool swap_state, const bool unconditional_swap, const bool encrypt_rom, const char* encryption_key_path, const bool correct_checksum, const char* rom_input_path, const char* rom_output_path);
@@ -46,6 +47,7 @@ int main(int argc, char** argv)
 	char* rom_high_path = NULL;
 	char* rom_low_path = NULL;
 	char* encryption_key_path = NULL;
+	bool rom_info = false;
 	bool split = false;
 	bool merge = false;
 	bool swap = false;
@@ -58,7 +60,7 @@ int main(int argc, char** argv)
 	int c;
 	int operation_result = 0;
 
-	while((c = getopt(argc, argv, "i:o:a:b:k:sgpunvcedh")) != -1)
+	while((c = getopt(argc, argv, "i:o:a:b:k:fsgpunvcedh")) != -1)
 	{
 		switch(c)
 		{
@@ -76,6 +78,9 @@ int main(int argc, char** argv)
 				break;
 			case 'k':
 				encryption_key_path = strdup(optarg);
+				break;
+			case 'f':
+				rom_info = true;
 				break;
 			case 's':
 				split = true;
@@ -117,7 +122,13 @@ int main(int argc, char** argv)
 		unswap = false;
 	}
 
-	if(!split && !merge && !swap && !unswap && !encrypt_rom && !decrypt_rom && !validate_checksum && !correct_checksum)
+	if(!rom_info && !split && !merge && !swap && !unswap && !encrypt_rom && !decrypt_rom && !validate_checksum && !correct_checksum)
+	{
+		print_help();
+		exit(1);
+	}
+
+	if(rom_info && !rom_input_path)
 	{
 		print_help();
 		exit(1);
@@ -177,7 +188,11 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	if(split)
+	if(rom_info)
+	{
+		operation_result = print_rom_info(encryption_key_path, rom_input_path);
+	}
+	else if(split)
 	{
 		operation_result = split_rom(swap, unswap, unconditional_swap, encryption_key_path, correct_checksum, rom_high_path, rom_low_path, rom_input_path);
 	}
@@ -228,6 +243,7 @@ void print_help(void)
     printf("  -a FILE  Path to High ROM for merging or splitting\n");
     printf("  -b FILE  Path to Low ROM for merging or splitting\n");
     printf("  -k FILE  Path to ROM encryption/decryption key\n");
+    printf("  -f       Print ROM info and quit (requires -i)\n");
     printf("  -s       Split ROM (requires -i, -a, -b)\n");
     printf("  -g       Merge ROM (requires -a, -b, -o)\n");
     printf("  -p       Byte swap ROM for burning to an IC (requires -i, -o)\n");
@@ -243,6 +259,27 @@ void print_help(void)
     printf("-n implies -u and not -n, and will override those if set\n");
     printf("-s and -m, -p and -u, -e and -d are each mutually exclusive\n");
 	return;
+}
+
+int print_rom_info(const char* encryption_key_path, const char* rom_input_path)
+{
+	char *info_string = NULL;
+	ParsedAmigaROMData input_rom = GetInitializedAmigaROM();
+
+	info_string = (char *)malloc(4096);
+	if(!info_string)
+	{
+		return 1;
+	}
+
+	input_rom = ReadAmigaROM(rom_input_path, encryption_key_path);
+	PrintAmigaROMInfo(&input_rom, info_string, 4096);
+
+	printf("%s\n", info_string);
+
+	free(info_string);
+
+	return 0;
 }
 
 int split_rom(const bool swap, const bool unswap, const bool unconditional_swap, const char* encryption_key_path, const bool correct_checksum, const char* rom_high_path, const char* rom_low_path, const char* rom_input_path)

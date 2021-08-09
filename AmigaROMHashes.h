@@ -28,19 +28,19 @@ SOFTWARE.
 #include <stddef.h>
 
 typedef struct {
-	char sha1hash[41];
-	size_t file_size;
-	char version[128];
-	char type;
-	int byte_swap;
+	const char sha1hash[41];
+	const size_t file_size;
+	const char version[128];
+	const char type;
+	const int byte_swap;
 } AmigaROMInfo;
 
 static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	// Merged Kickstart ROMs
-	{"fa685ebb666c3d8b09afe1329b7e41b443312f69", 262144, "AmigaOS 0.7",                                     'M', 0},
-	{"00c15406beb4b8ab1a16aa66c05860e1a7c1ad79", 262144, "AmigaOS 1.0",                                     'M', 0},
-	{"4192c505d130f446b2ada6bdc91dae730acafb4c", 262144, "AmigaOS 1.1 (NTSC)",                              'M', 0},
-	{"16df8b5fd524c5a1c7584b2457ac15aff9e3ad6d", 262144, "AmigaOS 1.1 (PAL)",                               'M', 0},
+	{"fa685ebb666c3d8b09afe1329b7e41b443312f69", 262144, "AmigaOS 0.7 (A1000)",                             'M', 0},
+	{"00c15406beb4b8ab1a16aa66c05860e1a7c1ad79", 262144, "AmigaOS 1.0 (A1000)",                             'M', 0},
+	{"4192c505d130f446b2ada6bdc91dae730acafb4c", 262144, "AmigaOS 1.1 (NTSC, A1000)",                       'M', 0},
+	{"16df8b5fd524c5a1c7584b2457ac15aff9e3ad6d", 262144, "AmigaOS 1.1 (PAL, A1000)",                        'M', 0},
 	{"11f9e62cf299f72184835b7b2a70a16333fc0d88", 262144, "AmigaOS 1.2",                                     'M', 0},
 	{"891e9a547772fe0c6c19b610baf8bc4ea7fcb785", 262144, "AmigaOS 1.3",                                     'M', 0},
 	{"c39bd9094d4e5f4e28c1411f3086950406062e87", 262144, "AmigaOS 1.3 (A3000)",                             'M', 0},
