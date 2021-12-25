@@ -253,7 +253,7 @@ void print_help(void)
     printf("  -c       Correct checksum (requires -i, -o)\n");
     printf("  -e       Encrypt ROM (requires -i, -o, -k)\n");
     printf("  -d       Decrypt ROM (requires -i, -o, -k)\n");
-    printf("  -h,      Display this information\n");
+    printf("  -h       Display this information\n");
     printf("\n");
     printf("Notes:\n");
     printf("-n implies -u and not -n, and will override those if set\n");
