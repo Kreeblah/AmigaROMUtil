@@ -178,6 +178,10 @@ bool DoAmigaROMCryptOperation(uint8_t *rom_data_without_crypt_header, const size
 //    and the header is not indicative of its byte swappiness.
 int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom);
 
+// Get the unencrypted size of the Amiga ROM in bytes, based on the
+// data passed in.
+size_t DetectUnencryptedAmigaROMSize(const ParsedAmigaROMData *amiga_rom);
+
 // If swap_unconditionally is true, the method will swap the ROM's bytes regardless of whether
 // or not it is a known ROM.
 // Returns true for success or false for failure.

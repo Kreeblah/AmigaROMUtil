@@ -819,19 +819,7 @@ void ParseAmigaROMData(ParsedAmigaROMData *amiga_rom, const char* keyfile_path)
 // encryption, if it's there.
 bool ValidateAmigaROMSize(const ParsedAmigaROMData *amiga_rom)
 {
-	size_t actual_rom_size;
-
-	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0)
-	{
-		return false;
-	}
-
-	actual_rom_size = amiga_rom->rom_size;
-
-	if(DetectAmigaROMEncryption(amiga_rom))
-	{
-		actual_rom_size = amiga_rom->rom_size - 11;
-	}
+	size_t actual_rom_size = DetectUnencryptedAmigaROMSize(amiga_rom);
 
 	return ((actual_rom_size > 10) && ((actual_rom_size & actual_rom_size - 1) == 0));
 }
@@ -1605,6 +1593,27 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 	}
 
 	return -1;
+}
+
+// Get the unencrypted size of the Amiga ROM in bytes, based on the
+// data passed in.
+size_t DetectUnencryptedAmigaROMSize(const ParsedAmigaROMData *amiga_rom)
+{
+	size_t actual_rom_size;
+
+	if(!amiga_rom || !(amiga_rom->rom_data) || amiga_rom->rom_size == 0)
+	{
+		return false;
+	}
+
+	actual_rom_size = amiga_rom->rom_size;
+
+	if(DetectAmigaROMEncryption(amiga_rom))
+	{
+		actual_rom_size = amiga_rom->rom_size - 11;
+	}
+
+	return actual_rom_size;
 }
 
 // If swap_unconditionally is true, the method will swap the ROM's bytes regardless of whether
