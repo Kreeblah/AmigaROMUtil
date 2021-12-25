@@ -57,6 +57,7 @@ static const AmigaROMMajorMinorVersions AMIGA_ROM_MAJOR_MINOR_VERSIONS[] = {
 	{44, 0xffff, "AmigaOS 3.5"},
 	{45, 0xffff, "AmigaOS 3.9"},
 	{46, 0xffff, "AmigaOS 3.1.4 (A500, A600, A1200, A2000)"},
+	{47, 0xffff, "AmigaOS 3.2.1"},
 	{50, 0xffff, "AmigaOS 4 Beta / MorphOS 1"},
 	{51, 0xffff, "AmigaOS 4 Beta / MorphOS 2+"},
 	{52, 0xffff, "AmigaOS 4.0"},
