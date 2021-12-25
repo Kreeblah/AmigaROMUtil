@@ -52,12 +52,13 @@ typedef struct {
 	bool valid_footer;
 } ParsedAmigaROMData;
 
-// Free all pointers which are expected to potentially be
-// allocated in a struct and sets the pointers to NULL.
+// Create and return a new and initialized struct.
+// Pointers are NOT allocated, but are NULL instead.
 ParsedAmigaROMData GetInitializedAmigaROM(void);
 
 // Free all pointers which are expected to potentially be
-// allocated in a struct.
+// allocated in a struct and sets the pointers to NULL,
+// and sets the rest of the struct to default values.
 void DestroyInitializedAmigaROM(ParsedAmigaROMData *amiga_rom);
 
 // Returns a parsed ROM data struct, with the ROM data and size included.
