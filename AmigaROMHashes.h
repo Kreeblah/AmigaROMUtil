@@ -109,7 +109,7 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"ed7e461d1fff3cda321631ae42b80e3cd4fa5ebb", 262144, "Ext. ROM 2.30 (A570)",                                     'O', 0},
 	{"14271106fe97e655345ba8cccac52be999c37990", 262144, "Ext. ROM 2.30 (CDTV)",                                     'O', 0},
 	{"03df800f032046fd892f6e7eec08b76d33981e8c", 262144, "Ext. ROM 2.30 (CDTV U35)",                                 'O', 0},
-	{"426ef4b3a229154ed320b2f84022261e7b4219a8", 262144, "Ext. ROM 2.35 (A570/A690/CDTV) (Unofficial)",              'O', 0},
+	{"426ef4b3a229154ed320b2f84022261e7b4219a8", 262144, "Ext. ROM 2.35 (CDTV) (Unofficial)",                        'O', 0},
 	{"5bef3d628ce59cc02a66e6e4ae0da48f60e78f7f", 524288, "Ext. ROM [40.060] (CD32)",                                 'O', 0},
 	{"03ca81c7a7b259cf64bc9582863eca0f6529f435", 262144, "Amiga CRT 3.1 FMV (CD32)",                                 'O', 0},
 	{"cfc16f8e930badcb9c3e7f889a57d645571fa86a", 262144, "Ext. ROM AmigaOS 3.2 (CDTV)",                              'O', 0},
