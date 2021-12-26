@@ -103,21 +103,21 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"eb93508f0bb0cde81d88bf22d05045565d66ef74", 524288, "AmigaOS 3.2.1 [47.102] (A3000)",                           'M', 0},
 	{"7db3c3226acc0bfe548c788cf1bc7c4c8774d66f", 524288, "AmigaOS 3.2.1 [47.102] (A4000)",                           'M', 0},
 	{"a75fcd349680cedeab06e496c6338394e81788d7", 524288, "AmigaOS 3.2.1 [47.102] (A4000T)",                          'M', 0},
-	{"fcf96487612170c58b4e0527db80ecd24572fbe5", 524288, "AROS 20210207",                                            'M', 0},
+
+	// Other ROMs
 	{"7ba40ffa17e500ed9fed041f3424bd81d9c907be", 262144, "Ext. ROM 1.0 (CDTV)",                                      'O', 0},
 	{"ed7e461d1fff3cda321631ae42b80e3cd4fa5ebb", 262144, "Ext. ROM 2.30 (A570)",                                     'O', 0},
 	{"14271106fe97e655345ba8cccac52be999c37990", 262144, "Ext. ROM 2.30 (CDTV)",                                     'O', 0},
 	{"03df800f032046fd892f6e7eec08b76d33981e8c", 262144, "Ext. ROM 2.30 (CDTV U35)",                                 'O', 0},
 	{"426ef4b3a229154ed320b2f84022261e7b4219a8", 262144, "Ext. ROM 2.35 (A570/A690/CDTV) (Unofficial)",              'O', 0},
-	{"5bef3d628ce59cc02a66e6e4ae0da48f60e78f7f", 524288, "Ext. ROM 40.060 (CD32)",                                   'O', 0},
-	{"03ca81c7a7b259cf64bc9582863eca0f6529f435", 262144, "Amiga CRT 3.1 CD32 FMV",                                   'O', 0},
+	{"5bef3d628ce59cc02a66e6e4ae0da48f60e78f7f", 524288, "Ext. ROM [40.060] (CD32)",                                 'O', 0},
+	{"03ca81c7a7b259cf64bc9582863eca0f6529f435", 262144, "Amiga CRT 3.1 FMV (CD32)",                                 'O', 0},
 	{"cfc16f8e930badcb9c3e7f889a57d645571fa86a", 262144, "Ext. ROM AmigaOS 3.2 (CDTV)",                              'O', 0},
 	{"c87f9fada4ee4e69f3cca0c36193be822b9f5fe6",   8192, "Amiga SCSI Boot ROM (A1000)",                              'O', 0},
 	{"e50f01baf28998928554786372a82c333c91276e",  16384, "Amiga SCSI Boot ROM (A590)",                               'O', 0},
 	{"3ce66919f6fd67974923a12d91b730f1ffb4a7ba",  32768, "Amiga SCSI Boot ROM (A4091)",                              'O', 0},
-	{"0a2cd16c696f62c02a146a95223450f37624f0ff", 524288, "Ext. ROM AROS 20210207",                                   'O', 0},
 	{"ba10d16166b2e2d6177c979c99edf8462b21651e", 524288, "Logica Dialoga 2.0",                                       'O', 0},
-	{"9e292178d20a6773f90664b00b137d8f4e52233d", 131072, "Ralph Schmidt Cyberstorm PPC 44.71",                       'O', 0},
+	{"9e292178d20a6773f90664b00b137d8f4e52233d", 131072, "Ralph Schmidt Cyberstorm PPC [44.071]",                    'O', 0},
 	{"cafafb916f16b9f3ec9b49aa4b40eb4eeceb5b5b", 131072, "Village Tronic Picasso IV 7.4",                            'O', 0}
 };
 
