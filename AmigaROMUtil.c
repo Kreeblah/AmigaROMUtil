@@ -477,7 +477,7 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 			break;
 	}
 
-	rom_version = (char *)malloc(64);
+	rom_version = (char *)malloc(143);
 	if(!rom_version)
 	{
 		free(successfully_parsed);
@@ -502,7 +502,7 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 		rom_type = NULL;
 		return;
 	}
-	snprintf(rom_version, 64, "ROM version:\t\t\t%s", amiga_rom->version);
+	snprintf(rom_version, 143, "ROM version:\t\t\t%s", amiga_rom->version);
 
 	embedded_rom_major_version = (char *)malloc(64);
 	if(!embedded_rom_major_version)
@@ -580,7 +580,7 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 		snprintf(embedded_rom_minor_version, 64, "ROM minor version number:\tN/A");
 	}
 
-	detected_embedded_rom_version = (char *)malloc(64);
+	detected_embedded_rom_version = (char *)malloc(157);
 	if(!detected_embedded_rom_version)
 	{
 		free(successfully_parsed);
@@ -612,7 +612,7 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 		return;
 	}
 
-	snprintf(detected_embedded_rom_version, 64, "ROM detected version number:\t%s", amiga_rom->major_minor_version);
+	snprintf(detected_embedded_rom_version, 157, "ROM detected version number:\t%s", amiga_rom->major_minor_version);
 
 	is_kickety_split = (char *)malloc(64);
 	if(!is_kickety_split)
