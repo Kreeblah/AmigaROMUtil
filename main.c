@@ -158,13 +158,13 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	if(swap && (!rom_input_path || !rom_high_path || !rom_low_path))
+	if(swap && (!rom_input_path || !rom_output_path))
 	{
 		print_help();
 		exit(1);
 	}
 
-	if(unswap && (!rom_high_path || !rom_low_path || !rom_output_path))
+	if(unswap && (!rom_input_path || !rom_output_path))
 	{
 		print_help();
 		exit(1);
