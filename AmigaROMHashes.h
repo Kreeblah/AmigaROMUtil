@@ -36,7 +36,7 @@ typedef struct {
 } AmigaROMInfo;
 
 static const AmigaROMInfo AMIGA_ROM_INFO[] = {
-	// Merged Kickstart ROMs
+	// Merged, unswapped Kickstart ROMs
 	{"fa685ebb666c3d8b09afe1329b7e41b443312f69", 262144, "AmigaOS 0.7 [27.003b] (A1000)",                            'M', 0},
 	{"00c15406beb4b8ab1a16aa66c05860e1a7c1ad79", 262144, "AmigaOS 1.0 (A1000)",                                      'M', 0},
 	{"4192c505d130f446b2ada6bdc91dae730acafb4c", 262144, "AmigaOS 1.1 [31.034] (NTSC, A1000)",                       'M', 0},
@@ -100,15 +100,39 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"7db3c3226acc0bfe548c788cf1bc7c4c8774d66f", 524288, "AmigaOS 3.2.1 [47.102] (A4000)",                           'M', 0},
 	{"a75fcd349680cedeab06e496c6338394e81788d7", 524288, "AmigaOS 3.2.1 [47.102] (A4000T)",                          'M', 0},
 
-	// Other ROMs
-	{"7ba40ffa17e500ed9fed041f3424bd81d9c907be", 262144, "Ext. ROM 1.0 (CDTV)",                                      'O', 0},
-	{"ed7e461d1fff3cda321631ae42b80e3cd4fa5ebb", 262144, "Ext. ROM 2.30 (A570)",                                     'O', 0},
-	{"14271106fe97e655345ba8cccac52be999c37990", 262144, "Ext. ROM 2.30 (CDTV)",                                     'O', 0},
-	{"03df800f032046fd892f6e7eec08b76d33981e8c", 262144, "Ext. ROM 2.30 (CDTV U35)",                                 'O', 0},
-	{"426ef4b3a229154ed320b2f84022261e7b4219a8", 262144, "Ext. ROM 2.35 (CDTV) (Unofficial)",                        'O', 0},
-	{"5bef3d628ce59cc02a66e6e4ae0da48f60e78f7f", 524288, "Ext. ROM [40.060] (CD32)",                                 'O', 0},
+	// Swapped Kickstart ROMs
+	{"4e2ee86c5675312ec4319bc694bdcabc81897e46", 262144, "AmigaOS 0.7 [27.003b] (A1000)",                            'M', 1},
+	{"19c02d1a53bc3a3559699f990f6ff6a238bc854d", 262144, "AmigaOS 1.0 (A1000)",                                      'M', 1},
+	{"8b47fd3feac0e138be71b49448c99d9713333728", 262144, "AmigaOS 1.1 [31.034] (NTSC, A1000)",                       'M', 1},
+	{"3bf4e177195d50d6c350e403961cc9b1b8822cac", 262144, "AmigaOS 1.1 [31.034] (PAL, A1000)",                        'M', 1},
+	{"a6fca3d9c4e67283dc12f2ddebb4bf08adef638d", 262144, "AmigaOS 1.2 [33.166] (A500/A1000/A2000)",                  'M', 1},
+	{"feb4c7ddffd2864d2695628bce95454aaf5925c2", 262144, "AmigaOS 1.2 [33.180] (A500/A1000/A2000)",                  'M', 1},
+	{"e84e6ec0d65eeae7cf3a1dd3947c6695497dd31d", 262144, "AmigaOS 1.3 [34.005] (A500/A1000/A2000/CDTV)",             'M', 1},
+	{"b7f61e452d668449e2e76682d427ec17a379557a", 524288, "AmigaOS 2.04 [37.175] (A500+)",                            'M', 1},
+	{"d0a8a9ad7ae0aa6418f6de63450f0bc628c87801", 524288, "AmigaOS 2.05 [37.299] (A600)",                             'M', 1},
+	{"199697d832caca8e4c15a6f432fd2d08d78e230f", 524288, "AmigaOS 2.05 [37.300] (A600HD)",                           'M', 1},
+	{"f9b7d78169aca89759cd362ab108e65a784a4988", 524288, "AmigaOS 2.05 [37.350] (A600HD)",                           'M', 1},
+	{"5a5719ad375741e8c23f9dd288ebe74abda18911", 524288, "AmigaOS 3.1 [40.063] (A500/A600/A2000)",                   'M', 1},
+	{"99fea56af9b7745dee75a9036cd37dfd41d8e8a9", 524288, "AmigaOS 3.x AF7.0 [45.061] (A500/A600/A2000)",             'M', 1},
+	{"6c5c0d4d0917e4ae413ac1c1cc14395508aa158a", 524288, "AmigaOS 3.x AF7.1 [45.064] (A500/A600/A2000)",             'M', 1},
+	{"65f78c13db26f6b6d1ee3e9ecec1867f1658d163", 524288, "AmigaOS 3.x AF8.0 [45.066] (A500/A600/A2000)",             'M', 1},
+	{"10a5eb4ccb3b88afeaa2ebbe860ae5e05611d893", 524288, "AmigaOS 3.1.4 [46.143] (A500/A600/A2000) (Old Copyright)", 'M', 1},
+	{"6f55f7afe5ef3f7d2045db2399758477d9bccdbf", 524288, "AmigaOS 3.1.4 [46.143] (A2000) (Old Copyright)",           'M', 1},
+	{"c50a0e32b4d59770b617c9817038bdfd1947eb46", 524288, "AmigaOS 3.1.4 [46.143] (A500/A600/A2000) (New Copyright)", 'M', 1},
+	{"dfae20c0a043d548d57299e64bc1d8bbfc8b011b", 524288, "AmigaOS 3.2 [47.096] (A500/A600/A1000/A2000/CDTV)",        'M', 1},
+	{"6019741ce39b994405ccfc073267b4deb21e94d1", 524288, "AmigaOS 3.2.1 [47.102] (A500/A600/A1000/A2000/CDTV)",      'M', 1},
+
+	// Extended Amiga ROMs
+	{"7ba40ffa17e500ed9fed041f3424bd81d9c907be", 262144, "Ext. ROM 1.0 (CDTV)",                                      'E', 0},
+	{"ed7e461d1fff3cda321631ae42b80e3cd4fa5ebb", 262144, "Ext. ROM 2.30 (A570)",                                     'E', 0},
+	{"14271106fe97e655345ba8cccac52be999c37990", 262144, "Ext. ROM 2.30 (CDTV)",                                     'E', 0},
+	{"03df800f032046fd892f6e7eec08b76d33981e8c", 262144, "Ext. ROM 2.30 (CDTV U35)",                                 'E', 0},
+	{"426ef4b3a229154ed320b2f84022261e7b4219a8", 262144, "Ext. ROM 2.35 (CDTV) (Unofficial)",                        'E', 0},
+	{"5bef3d628ce59cc02a66e6e4ae0da48f60e78f7f", 524288, "Ext. ROM [40.060] (CD32)",                                 'E', 0},
+	{"cfc16f8e930badcb9c3e7f889a57d645571fa86a", 262144, "Ext. ROM AmigaOS 3.2 (CDTV)",                              'E', 0},
+
+	// Other unswapped ROMs
 	{"03ca81c7a7b259cf64bc9582863eca0f6529f435", 262144, "Amiga CRT 3.1 FMV (CD32)",                                 'O', 0},
-	{"cfc16f8e930badcb9c3e7f889a57d645571fa86a", 262144, "Ext. ROM AmigaOS 3.2 (CDTV)",                              'O', 0},
 	{"c87f9fada4ee4e69f3cca0c36193be822b9f5fe6",   8192, "Amiga SCSI Boot ROM (A1000)",                              'O', 0},
 	{"e50f01baf28998928554786372a82c333c91276e",  16384, "Amiga SCSI Boot ROM (A590)",                               'O', 0},
 	{"3ce66919f6fd67974923a12d91b730f1ffb4a7ba",  32768, "Amiga SCSI Boot ROM (A4091)",                              'O', 0},

@@ -465,6 +465,9 @@ void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string,
 		case 'B':
 			snprintf(rom_type, 64, "ROM type:\t\t\tKickstart Lo ROM");
 			break;
+		case 'E':
+			snprintf(rom_type, 64, "ROM type:\t\t\tExtended Amiga ROM");
+			break;
 		case 'M':
 			snprintf(rom_type, 64, "ROM type:\t\t\tMerged Kickstart ROM");
 			break;
@@ -965,6 +968,7 @@ const char* DetectAmigaMajorMinorROMVersion(const ParsedAmigaROMData *amiga_rom)
 // Valid return values are:
 // A - Kickstart Hi/U34 ROM
 // B - Kickstart Lo/U35 ROM
+// E - Extended Amiga ROM
 // M - Kickstart merged ROM
 // O - Other (non-Kickstart) ROM
 // U - Unknown ROM

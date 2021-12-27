@@ -105,6 +105,7 @@ const char* DetectAmigaMajorMinorROMVersion(const ParsedAmigaROMData *amiga_rom)
 // Valid return values are:
 // A - Kickstart Hi/U34 ROM
 // B - Kickstart Lo/U35 ROM
+// E - Extended Amiga ROM
 // M - Kickstart merged ROM
 // O - Other (non-Kickstart) ROM
 // U - Unknown ROM
