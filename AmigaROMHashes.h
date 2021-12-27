@@ -78,7 +78,7 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"10390d4169b1009e6c81f8a572cddd83127f583d", 524288, "AmigaOS 3.x AF8.0 [45.066] (A3000)",                       'M', 0},
 	{"0e1a4b5062826d8e3520cce752f47409f4adef96", 524288, "AmigaOS 3.x AF8.0 [45.066] (A4000)",                       'M', 0},
 	{"d5f1be640c38e7a8585567e4ed71b7d5e1ff772c", 524288, "AmigaOS 3.x AF8.0 [45.066] (A4000T)",                      'M', 0},
-	{"8a2405087ce182225656dd0b93069c45743f9e34", 524288, "AmigaOS 3.1.4 [46.143] (A500/A600) (Old Copyright)",       'M', 0},
+	{"8a2405087ce182225656dd0b93069c45743f9e34", 524288, "AmigaOS 3.1.4 [46.143] (A500/A600/A2000) (Old Copyright)", 'M', 0},
 	{"6355a9ed5dc840422f9b73308a91be0d0bb506bd", 524288, "AmigaOS 3.1.4 [46.143] (A1200) (Old Copyright)",           'M', 0},
 	{"dd42f228616af9159856365b906c17e700e5424c", 524288, "AmigaOS 3.1.4 [46.143] (A2000) (Old Copyright)",           'M', 0},
 	{"1a34b25a25e260e38e879172850143c80b461a64", 524288, "AmigaOS 3.1.4 [46.143] (A3000) (Old Copyright)",           'M', 0},
