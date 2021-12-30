@@ -707,7 +707,15 @@ int swap_rom(const bool swap_state, const bool unconditional_swap, const bool en
 	}
 
 	DestroyInitializedAmigaROM(&input_rom);
-	printf("Successfully wrote swapped ROM.\n");
+
+	if(swap_state)
+	{
+		printf("Successfully wrote swapped ROM.\n");
+	}
+	else
+	{
+		printf("Successfully wrote unswapped ROM.\n");
+	}
 
 	return 0;
 }

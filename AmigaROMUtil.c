@@ -1678,12 +1678,22 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_
 		return false;
 	}
 
+	ParsedAmigaROMData *temp_rom_data = (ParsedAmigaROMData*)malloc(sizeof(*amiga_rom));
+
+	memcpy(temp_rom_data, amiga_rom, sizeof(*amiga_rom));
+
+	if(temp_rom_data->parsed_rom)
+	{
+		SetAmigaROMByteSwap(temp_rom_data, !(temp_rom_data->is_byte_swapped), temp_rom_data->is_byte_swapped, false);
+	}
+
 	if(rom_high->rom_data)
 	{
 		test_ptr = realloc(rom_high->rom_data, amiga_rom->rom_size);
 		printf("fdsa\n");
 		if(!test_ptr)
 		{
+			free(temp_rom_data);
 			return false;
 		}
 		else
@@ -1698,6 +1708,7 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_
 		test_ptr = (uint8_t*)malloc(amiga_rom->rom_size);
 		if(!test_ptr)
 		{
+			free(temp_rom_data);
 			return false;
 		}
 		else
@@ -1717,6 +1728,7 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_
 		printf("asdf\n");
 		if(!test_ptr)
 		{
+			free(temp_rom_data);
 			return false;
 		}
 		else
@@ -1731,6 +1743,7 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_
 		test_ptr = (uint8_t*)malloc(amiga_rom->rom_size);
 		if(!test_ptr)
 		{
+			free(temp_rom_data);
 			return false;
 		}
 		else
@@ -1752,6 +1765,8 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_
 
 	ParseAmigaROMData(rom_high, NULL);
 	ParseAmigaROMData(rom_low, NULL);
+
+	free(temp_rom_data);
 
 	return true;
 }

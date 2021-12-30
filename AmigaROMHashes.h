@@ -37,7 +37,7 @@ typedef struct {
 
 static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	// Merged, unswapped Kickstart ROMs
-	{"fa685ebb666c3d8b09afe1329b7e41b443312f69", 262144, "AmigaOS 0.7 [27.003b] (A1000)",                            'M', 0},
+	{"fa685ebb666c3d8b09afe1329b7e41b443312f69", 262144, "AmigaOS 0.7b [27.003b] (A1000)",                           'M', 0},
 	{"00c15406beb4b8ab1a16aa66c05860e1a7c1ad79", 262144, "AmigaOS 1.0 (A1000)",                                      'M', 0},
 	{"4192c505d130f446b2ada6bdc91dae730acafb4c", 262144, "AmigaOS 1.1 [31.034] (NTSC, A1000)",                       'M', 0},
 	{"16df8b5fd524c5a1c7584b2457ac15aff9e3ad6d", 262144, "AmigaOS 1.1 [31.034] (PAL, A1000)",                        'M', 0},
@@ -101,7 +101,7 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"a75fcd349680cedeab06e496c6338394e81788d7", 524288, "AmigaOS 3.2.1 [47.102] (A4000T)",                          'M', 0},
 
 	// Swapped Kickstart ROMs
-	{"4e2ee86c5675312ec4319bc694bdcabc81897e46", 262144, "AmigaOS 0.7 [27.003b] (A1000)",                            'M', 1},
+	{"4e2ee86c5675312ec4319bc694bdcabc81897e46", 262144, "AmigaOS 0.7b [27.003b] (A1000)",                           'M', 1},
 	{"19c02d1a53bc3a3559699f990f6ff6a238bc854d", 262144, "AmigaOS 1.0 (A1000)",                                      'M', 1},
 	{"8b47fd3feac0e138be71b49448c99d9713333728", 262144, "AmigaOS 1.1 [31.034] (NTSC, A1000)",                       'M', 1},
 	{"3bf4e177195d50d6c350e403961cc9b1b8822cac", 262144, "AmigaOS 1.1 [31.034] (PAL, A1000)",                        'M', 1},
