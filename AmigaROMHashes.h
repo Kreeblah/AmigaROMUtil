@@ -99,6 +99,11 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"eb93508f0bb0cde81d88bf22d05045565d66ef74", 524288, "AmigaOS 3.2.1 [47.102] (A3000)",                           'M', 0},
 	{"7db3c3226acc0bfe548c788cf1bc7c4c8774d66f", 524288, "AmigaOS 3.2.1 [47.102] (A4000)",                           'M', 0},
 	{"a75fcd349680cedeab06e496c6338394e81788d7", 524288, "AmigaOS 3.2.1 [47.102] (A4000T)",                          'M', 0},
+	{"7d5ebe686b69d59a863cc77a36b2cd60359a9ed2", 524288, "AmigaOS 3.2.2 [47.111] (A500/A600/A1000/A2000/CDTV)",      'M', 0},
+	{"d9622547d84741b52c5472607f9aca75565cbba3", 524288, "AmigaOS 3.2.2 [47.111] (A1200)",                           'M', 0},
+	{"443d98369aca3ba51ab2d4789d14fa9a26379c0b", 524288, "AmigaOS 3.2.2 [47.111] (A3000)",                           'M', 0},
+	{"a3207bd5b5a3ca629010f3159ac793040fa813ef", 524288, "AmigaOS 3.2.2 [47.111] (A4000)",                           'M', 0},
+	{"8e3fff2675cc1b97b4f072b63fd4de7093f7c627", 524288, "AmigaOS 3.2.2 [47.111] (A4000T)",                          'M', 0},
 
 	// Swapped Kickstart ROMs
 	{"4e2ee86c5675312ec4319bc694bdcabc81897e46", 262144, "AmigaOS 0.7b [27.003b] (A1000)",                           'M', 1},
@@ -121,6 +126,7 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"c50a0e32b4d59770b617c9817038bdfd1947eb46", 524288, "AmigaOS 3.1.4 [46.143] (A500/A600/A2000) (New Copyright)", 'M', 1},
 	{"dfae20c0a043d548d57299e64bc1d8bbfc8b011b", 524288, "AmigaOS 3.2 [47.096] (A500/A600/A1000/A2000/CDTV)",        'M', 1},
 	{"6019741ce39b994405ccfc073267b4deb21e94d1", 524288, "AmigaOS 3.2.1 [47.102] (A500/A600/A1000/A2000/CDTV)",      'M', 1},
+	{"7dc0de0699d01cc0a80562c296daa462a367da3b", 524288, "AmigaOS 3.2.2 [47.111] (A500/A600/A1000/A2000/CDTV)",      'M', 1},
 
 	// Split/swapped Kickstart ROMs for burning
 	{"2be27a7b8c47c2a47bd3c8298d00b3b71bba9629", 262144, "AmigaOS 1.3 [34.005] (A3000) Hi",                          'A', 1},
@@ -207,6 +213,14 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"8546b9baadbdc391e2fb52d9b0f2cbb85f780a4c", 262144, "AmigaOS 3.2.1 [47.102] (A4000) Lo",                        'B', 1},
 	{"c59c779bd94e5e8c9620e78339ba1b9f3b64251c", 262144, "AmigaOS 3.2.1 [47.102] (A4000T) Hi",                       'A', 1},
 	{"998bea2daa4051127ffe0c4701b42abc7c4c1cfc", 262144, "AmigaOS 3.2.1 [47.102] (A4000T) Lo",                       'B', 1},
+	{"d08959195f260c1eddd8104ce80eee6c666fa352", 262144, "AmigaOS 3.2.2 [47.111] (A1200) Hi",                        'A', 1},
+	{"f215641da4b59dc4dca448c41a6f8a2d06411c38", 262144, "AmigaOS 3.2.2 [47.111] (A1200) Lo",                        'B', 1},
+	{"8b32d734eb9977bc0d2b87226fd3795c163ed587", 262144, "AmigaOS 3.2.2 [47.111] (A3000) Hi",                        'A', 1},
+	{"fbe314870981a0c911a4bec5c9c581e43a649347", 262144, "AmigaOS 3.2.2 [47.111] (A3000) Lo",                        'B', 1},
+	{"d9e1badba7b50ae0a8d21383da96dbba6892cfe1", 262144, "AmigaOS 3.2.2 [47.111] (A4000) Hi",                        'A', 1},
+	{"92107dd42ba3b90a41b28a0e58c51d9d2fb04a61", 262144, "AmigaOS 3.2.2 [47.111] (A4000) Lo",                        'B', 1},
+	{"8618ede52eee4a2e7e7a7d27120d9d13d87cf1ac", 262144, "AmigaOS 3.2.2 [47.111] (A4000T) Hi",                       'A', 1},
+	{"a1261042bc11bc2c0bb44525de7d57c2b4ba39b0", 262144, "AmigaOS 3.2.2 [47.111] (A4000T) Lo",                       'B', 1},
 
 	// Extended Amiga ROMs
 	{"ed7e461d1fff3cda321631ae42b80e3cd4fa5ebb", 262144, "Ext. ROM 1.3 (A570)",                                      'E', 0},
