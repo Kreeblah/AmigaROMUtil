@@ -226,6 +226,8 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"ed7e461d1fff3cda321631ae42b80e3cd4fa5ebb", 262144, "Ext. ROM 1.3 (A570)",                                      'E', 0},
 	{"7ba40ffa17e500ed9fed041f3424bd81d9c907be", 262144, "Ext. ROM 1.3 (CDTV)",                                      'E', 0},
 	{"14271106fe97e655345ba8cccac52be999c37990", 262144, "Ext. ROM 2.3 (CDTV)",                                      'E', 0},
+	{"08ad97eea88ad621bd4dfdbf3d8259fb187ab1dc", 262144, "Ext. ROM 2.35 (A570) (Unofficial)",                        'E', 0},
+	{"e3809198a6ffe7cbcd5a3d87c640c791f9581f05", 262144, "Ext. ROM 2.35 (A690) (Unofficial)",                        'E', 0},
 	{"426ef4b3a229154ed320b2f84022261e7b4219a8", 262144, "Ext. ROM 2.35 (CDTV) (Unofficial)",                        'E', 0},
 	{"5bef3d628ce59cc02a66e6e4ae0da48f60e78f7f", 524288, "Ext. ROM [40.060] (CD32)",                                 'E', 0},
 	{"cfc16f8e930badcb9c3e7f889a57d645571fa86a", 262144, "Ext. ROM 3.2 [47.096] (CDTV)",                             'E', 0},
