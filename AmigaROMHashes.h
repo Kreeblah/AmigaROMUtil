@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2021 Christopher Gelatt
+Copyright (c) 2025 Christopher Gelatt
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -104,6 +104,11 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"443d98369aca3ba51ab2d4789d14fa9a26379c0b", 524288, "AmigaOS 3.2.2 [47.111] (A3000)",                           'M', 0},
 	{"a3207bd5b5a3ca629010f3159ac793040fa813ef", 524288, "AmigaOS 3.2.2 [47.111] (A4000)",                           'M', 0},
 	{"8e3fff2675cc1b97b4f072b63fd4de7093f7c627", 524288, "AmigaOS 3.2.2 [47.111] (A4000T)",                          'M', 0},
+	{"a9d51491d4b1356673621b61f789aed979bd01be", 524288, "AmigaOS 3.2.3 [47.115] (A500/A600/A1000/A2000/CDTV)",      'M', 0},
+	{"3f48ef0eca607855d7872796ba886d7889451fad", 524288, "AmigaOS 3.2.3 [47.115] (A1200)",                           'M', 0},
+	{"76222baa6d5654dbba4a769bb86c1f39322d1c1c", 524288, "AmigaOS 3.2.3 [47.115] (A3000)",                           'M', 0},
+	{"81902f41cbf6fc6b7d18c691a4ada6245d174bde", 524288, "AmigaOS 3.2.3 [47.115] (A4000)",                           'M', 0},
+	{"8eeb6c2b282e589bd1589ebba3a78a41722499ec", 524288, "AmigaOS 3.2.3 [47.115] (A4000T)",                          'M', 0},
 
 	// Swapped Kickstart ROMs
 	{"4e2ee86c5675312ec4319bc694bdcabc81897e46", 262144, "AmigaOS 0.7b [27.003b] (A1000)",                           'M', 1},
@@ -127,6 +132,7 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"dfae20c0a043d548d57299e64bc1d8bbfc8b011b", 524288, "AmigaOS 3.2 [47.096] (A500/A600/A1000/A2000/CDTV)",        'M', 1},
 	{"6019741ce39b994405ccfc073267b4deb21e94d1", 524288, "AmigaOS 3.2.1 [47.102] (A500/A600/A1000/A2000/CDTV)",      'M', 1},
 	{"7dc0de0699d01cc0a80562c296daa462a367da3b", 524288, "AmigaOS 3.2.2 [47.111] (A500/A600/A1000/A2000/CDTV)",      'M', 1},
+	{"5f53c7566fed3c6c20cc797161b751059f8a7ba0", 524288, "AmigaOS 3.2.3 [47.115] (A500/A600/A1000/A2000/CDTV)",      'M', 1},
 
 	// Split/swapped Kickstart ROMs for burning
 	{"2be27a7b8c47c2a47bd3c8298d00b3b71bba9629", 262144, "AmigaOS 1.3 [34.005] (A3000) Hi",                          'A', 1},
@@ -221,6 +227,14 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"92107dd42ba3b90a41b28a0e58c51d9d2fb04a61", 262144, "AmigaOS 3.2.2 [47.111] (A4000) Lo",                        'B', 1},
 	{"8618ede52eee4a2e7e7a7d27120d9d13d87cf1ac", 262144, "AmigaOS 3.2.2 [47.111] (A4000T) Hi",                       'A', 1},
 	{"a1261042bc11bc2c0bb44525de7d57c2b4ba39b0", 262144, "AmigaOS 3.2.2 [47.111] (A4000T) Lo",                       'B', 1},
+	{"ef74df7d0103d4a1f06248455b30b85db24ffd5a", 262144, "AmigaOS 3.2.3 [47.115] (A1200) Hi",                        'A', 1},
+	{"85a36c01392dac8c8ac5ba73854f2fca61495668", 262144, "AmigaOS 3.2.3 [47.115] (A1200) Lo",                        'B', 1},
+	{"d7a31bef244715075228465f6d3d126fd7629224", 262144, "AmigaOS 3.2.3 [47.115] (A3000) Hi",                        'A', 1},
+	{"9bc15df22a2b6c2132dae4e19a73ec7caf507248", 262144, "AmigaOS 3.2.3 [47.115] (A3000) Lo",                        'B', 1},
+	{"770bb69935f18389ab24b7472afbd955e6625c7a", 262144, "AmigaOS 3.2.3 [47.115] (A4000) Hi",                        'A', 1},
+	{"a12a13aebc18f09c71ad5c9f6ee5e3d76550eef8", 262144, "AmigaOS 3.2.3 [47.115] (A4000) Lo",                        'B', 1},
+	{"be72613b9a5b8ff1c9acad3553993d0b061ec8e3", 262144, "AmigaOS 3.2.3 [47.115] (A4000T) Hi",                       'A', 1},
+	{"350157c6668c58dacd73b3bce37570c8af17a2e3", 262144, "AmigaOS 3.2.3 [47.115] (A4000T) Lo",                       'B', 1},
 
 	// Extended Amiga ROMs
 	{"ed7e461d1fff3cda321631ae42b80e3cd4fa5ebb", 262144, "Ext. ROM 1.3 (A570)",                                      'E', 0},
