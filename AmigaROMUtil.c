@@ -192,6 +192,7 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 
 	if(seek_status < 0)
 	{
+		fclose(fp);
 		return amiga_rom;
 	}
 	else
@@ -204,6 +205,7 @@ ParsedAmigaROMData ReadAmigaROM(const char *rom_file_path, const char *keyfile_p
 
 	if(!amiga_rom.rom_data)
 	{
+		fclose(fp);
 		return amiga_rom;
 	}
 
