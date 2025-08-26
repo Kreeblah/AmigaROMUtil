@@ -25,6 +25,10 @@ SOFTWARE.
 #ifndef REMUSTOOLS_H
 #define REMUSTOOLS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 #define REMUS_SPLIT_FILE_HEADER              0x524D5346
@@ -36,5 +40,9 @@ typedef struct RemusFile {
 	uint32_t version;
 	uint8_t  *file_data;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

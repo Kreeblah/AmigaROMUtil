@@ -25,6 +25,10 @@ SOFTWARE.
 #ifndef AMIGAROMHASHES_H
 #define AMIGAROMHASHES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 
 typedef struct {
@@ -255,5 +259,9 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"9e292178d20a6773f90664b00b137d8f4e52233d", 131072, "Ralph Schmidt Cyberstorm PPC [44.071]",                    'O', 0},
 	{"cafafb916f16b9f3ec9b49aa4b40eb4eeceb5b5b", 131072, "Village Tronic Picasso IV 7.4",                            'O', 0}
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

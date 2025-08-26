@@ -25,6 +25,10 @@ SOFTWARE.
 #ifndef AMIGAROMUTIL_H
 #define AMIGAROMUTIL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "AmigaROMHashes.h"
 
 #include <stdbool.h>
@@ -199,5 +203,9 @@ bool MergeAmigaROM(const ParsedAmigaROMData *rom_high, const ParsedAmigaROMData 
 // Write a ROM to disk and return a bool indicating whether the write
 // was successful or not.
 bool WriteAmigaROM(const ParsedAmigaROMData *amiga_rom, const char *rom_file_path);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
