@@ -56,14 +56,41 @@ typedef struct {
 	bool valid_footer;
 } ParsedAmigaROMData;
 
+typedef struct {
+	char *successfully_parsed;
+	char *rom_size_validated;
+	char *has_reset_vector;
+	char *rom_is_encrypted;
+	char *can_decrypt_rom;
+	char *successfully_decrypted_rom;
+	char *rom_is_byte_swapped;
+	char *rom_has_valid_checksum;
+	char *rom_header_info;
+	char *rom_type;
+	char *rom_version;
+	char *embedded_rom_major_version;
+	char *embedded_rom_minor_version;
+	char *detected_embedded_rom_version;
+	char *is_kickety_split;
+	char *has_valid_footer;
+} AmigaROMInfoData;
+
 // Create and return a new and initialized struct.
 // Pointers are NOT allocated, but are NULL instead.
 ParsedAmigaROMData GetInitializedAmigaROM(void);
+
+// Create and return a new and initialized struct.
+// Pointers are unallocated and set to NULL.
+AmigaROMInfoData GetInitializedAmigaROMInfoData(void);
 
 // Free all pointers which are expected to potentially be
 // allocated in a struct and sets the pointers to NULL,
 // and sets the rest of the struct to default values.
 void DestroyInitializedAmigaROM(ParsedAmigaROMData *amiga_rom);
+
+// Free all pointers which are currently allocated and
+// set them to NULL.
+void DestroyInitializedAmigaROMInfoData(AmigaROMInfoData *rom_info);
 
 // Returns a parsed ROM data struct, with the ROM data and size included.
 // If anything files, parsed_rom will be false.  If encrypted, the ROM

@@ -135,6 +135,32 @@ ParsedAmigaROMData GetInitializedAmigaROM(void)
 	return amiga_rom;
 }
 
+// Create and return a new and initialized struct.
+// Pointers are unallocated and set to NULL.
+AmigaROMInfoData GetInitializedAmigaROMInfoData(void)
+{
+	AmigaROMInfoData rom_info;
+
+	rom_info.successfully_parsed = NULL;
+	rom_info.rom_size_validated = NULL;
+	rom_info.has_reset_vector = NULL;
+	rom_info.rom_is_encrypted = NULL;
+	rom_info.can_decrypt_rom = NULL;
+	rom_info.successfully_decrypted_rom = NULL;
+	rom_info.rom_is_byte_swapped = NULL;
+	rom_info.rom_has_valid_checksum = NULL;
+	rom_info.rom_header_info = NULL;
+	rom_info.rom_type = NULL;
+	rom_info.rom_version = NULL;
+	rom_info.embedded_rom_major_version = NULL;
+	rom_info.embedded_rom_minor_version = NULL;
+	rom_info.detected_embedded_rom_version = NULL;
+	rom_info.is_kickety_split = NULL;
+	rom_info.has_valid_footer = NULL;
+
+	return rom_info;
+}
+
 // Free all pointers which are expected to potentially be
 // allocated in a struct and sets the pointers to NULL,
 // and sets the rest of the struct to default values.
@@ -165,6 +191,107 @@ void DestroyInitializedAmigaROM(ParsedAmigaROMData *amiga_rom)
 	amiga_rom->major_minor_version = NULL;
 	amiga_rom->is_kickety_split = false;
 	amiga_rom->valid_footer = false;
+}
+
+// Free all pointers which are currently allocated and
+// set them to NULL.
+void DestroyInitializedAmigaROMInfoData(AmigaROMInfoData *rom_info)
+{
+	if(rom_info->successfully_parsed)
+	{
+		free(rom_info->successfully_parsed);
+		rom_info->successfully_parsed = NULL;
+	}
+
+	if(rom_info->rom_size_validated)
+	{
+		free(rom_info->rom_size_validated);
+		rom_info->rom_size_validated = NULL;
+	}
+
+	if(rom_info->has_reset_vector)
+	{
+		free(rom_info->has_reset_vector);
+		rom_info->has_reset_vector = NULL;
+	}
+
+	if(rom_info->rom_is_encrypted)
+	{
+		free(rom_info->rom_is_encrypted);
+		rom_info->rom_is_encrypted = NULL;
+	}
+
+	if(rom_info->can_decrypt_rom)
+	{
+		free(rom_info->can_decrypt_rom);
+		rom_info->can_decrypt_rom = NULL;
+	}
+
+	if(rom_info->successfully_decrypted_rom)
+	{
+		free(rom_info->successfully_decrypted_rom);
+		rom_info->successfully_decrypted_rom = NULL;
+	}
+
+	if(rom_info->rom_is_byte_swapped)
+	{
+		free(rom_info->rom_is_byte_swapped);
+		rom_info->rom_is_byte_swapped = NULL;
+	}
+
+	if(rom_info->rom_has_valid_checksum)
+	{
+		free(rom_info->rom_has_valid_checksum);
+		rom_info->rom_has_valid_checksum = NULL;
+	}
+
+	if(rom_info->rom_header_info)
+	{
+		free(rom_info->rom_header_info);
+		rom_info->rom_header_info = NULL;
+	}
+
+	if(rom_info->rom_type)
+	{
+		free(rom_info->rom_type);
+		rom_info->rom_type = NULL;
+	}
+
+	if(rom_info->rom_version)
+	{
+		free(rom_info->rom_version);
+		rom_info->rom_version = NULL;
+	}
+
+	if(rom_info->embedded_rom_major_version)
+	{
+		free(rom_info->embedded_rom_major_version);
+		rom_info->embedded_rom_major_version = NULL;
+	}
+
+	if(rom_info->embedded_rom_minor_version)
+	{
+		free(rom_info->embedded_rom_minor_version);
+		rom_info->embedded_rom_minor_version = NULL;
+	}
+
+	if(rom_info->detected_embedded_rom_version)
+	{
+		free(rom_info->detected_embedded_rom_version);
+		rom_info->detected_embedded_rom_version = NULL;
+	}
+
+	if(rom_info->is_kickety_split)
+	{
+		free(rom_info->is_kickety_split);
+		rom_info->is_kickety_split = NULL;
+	}
+
+	if(rom_info->has_valid_footer)
+	{
+		free(rom_info->has_valid_footer);
+		rom_info->has_valid_footer = NULL;
+	}
 }
 
 // Returns a parsed ROM data struct, with the ROM data and size included.
@@ -254,495 +381,223 @@ bool IsAmigaROM(const ParsedAmigaROMData *amiga_rom)
 // Puts ROM info data into output_string
 void PrintAmigaROMInfo(const ParsedAmigaROMData *amiga_rom, char *output_string, const size_t string_length)
 {
-	char *successfully_parsed = NULL;
-	char *rom_size_validated = NULL;
-	char *has_reset_vector = NULL;
-	char *rom_is_encrypted = NULL;
-	char *can_decrypt_rom = NULL;
-	char *successfully_decrypted_rom = NULL;
-	char *rom_is_byte_swapped = NULL;
-	char *rom_has_valid_checksum = NULL;
-	char *rom_header_info = NULL;
-	char *rom_type = NULL;
-	char *rom_version = NULL;
-	char *embedded_rom_major_version = NULL;
-	char *embedded_rom_minor_version = NULL;
-	char *detected_embedded_rom_version = NULL;
-	char *is_kickety_split = NULL;
-	char *has_valid_footer = NULL;
+	AmigaROMInfoData rom_info = GetInitializedAmigaROMInfoData();
 
 	if(!amiga_rom || !output_string)
 	{
 		return;
 	}
 
-	successfully_parsed = (char *)malloc(64);
-	if(!successfully_parsed)
+	rom_info.successfully_parsed = (char *)malloc(64);
+	if(!rom_info.successfully_parsed)
 	{
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(successfully_parsed, 64, "Successfully parsed:\t\t%d", amiga_rom->parsed_rom);
+	snprintf(rom_info.successfully_parsed, 64, "Successfully parsed:\t\t%d", amiga_rom->parsed_rom);
 
-	rom_size_validated = (char *)malloc(64);
-	if(!rom_size_validated)
+	rom_info.rom_size_validated = (char *)malloc(64);
+	if(!rom_info.rom_size_validated)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(rom_size_validated, 64, "ROM size validated:\t\t%d", amiga_rom->validated_size);
+	snprintf(rom_info.rom_size_validated, 64, "ROM size validated:\t\t%d", amiga_rom->validated_size);
 
-	has_reset_vector = (char *)malloc(64);
-	if(!has_reset_vector)
+	rom_info.has_reset_vector = (char *)malloc(64);
+	if(!rom_info.has_reset_vector)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(has_reset_vector, 64, "Has reset vector:\t\t%d", amiga_rom->has_reset_vector);
+	snprintf(rom_info.has_reset_vector, 64, "Has reset vector:\t\t%d", amiga_rom->has_reset_vector);
 
-	rom_is_encrypted = (char *)malloc(64);
-	if(!rom_is_encrypted)
+	rom_info.rom_is_encrypted = (char *)malloc(64);
+	if(!rom_info.rom_is_encrypted)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(rom_is_encrypted, 64, "ROM is encrypted:\t\t%d", amiga_rom->is_encrypted);
+	snprintf(rom_info.rom_is_encrypted, 64, "ROM is encrypted:\t\t%d", amiga_rom->is_encrypted);
 
-	can_decrypt_rom = (char *)malloc(64);
-	if(!can_decrypt_rom)
+	rom_info.can_decrypt_rom = (char *)malloc(64);
+	if(!rom_info.can_decrypt_rom)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(can_decrypt_rom, 64, "Can decrypt ROM:\t\t%d", amiga_rom->can_decrypt);
+	snprintf(rom_info.can_decrypt_rom, 64, "Can decrypt ROM:\t\t%d", amiga_rom->can_decrypt);
 
-	successfully_decrypted_rom = (char *)malloc(64);
-	if(!successfully_decrypted_rom)
+	rom_info.successfully_decrypted_rom = (char *)malloc(64);
+	if(!rom_info.successfully_decrypted_rom)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(successfully_decrypted_rom, 64, "Successfully decrypted ROM:\t%d", amiga_rom->successfully_decrypted);
+	snprintf(rom_info.successfully_decrypted_rom, 64, "Successfully decrypted ROM:\t%d", amiga_rom->successfully_decrypted);
 
-	rom_is_byte_swapped = (char *)malloc(64);
-	if(!rom_is_byte_swapped)
+	rom_info.rom_is_byte_swapped = (char *)malloc(64);
+	if(!rom_info.rom_is_byte_swapped)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(rom_is_byte_swapped, 64, "ROM is byte swapped:\t\t%d", amiga_rom->is_byte_swapped);
+	snprintf(rom_info.rom_is_byte_swapped, 64, "ROM is byte swapped:\t\t%d", amiga_rom->is_byte_swapped);
 
-	rom_has_valid_checksum = (char *)malloc(64);
-	if(!rom_has_valid_checksum)
+	rom_info.rom_has_valid_checksum = (char *)malloc(64);
+	if(!rom_info.rom_has_valid_checksum)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(rom_has_valid_checksum, 64, "ROM has a valid checksum:\t%d", amiga_rom->has_valid_checksum);
+	snprintf(rom_info.rom_has_valid_checksum, 64, "ROM has a valid checksum:\t%d", amiga_rom->has_valid_checksum);
 
-	rom_header_info = (char *)malloc(64);
-	if(!rom_header_info)
+	rom_info.rom_header_info = (char *)malloc(64);
+	if(!rom_info.rom_header_info)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
 
 	switch(amiga_rom->header)
 	{
 		case 0:
-			snprintf(rom_header_info, 64, "ROM type indicated by header:\tNot an Amiga ROM");
+			snprintf(rom_info.rom_header_info, 64, "ROM type indicated by header:\tNot an Amiga ROM");
 			break;
 		case 1:
-			snprintf(rom_header_info, 64, "ROM type indicated by header:\t256KB Kickstart ROM");
+			snprintf(rom_info.rom_header_info, 64, "ROM type indicated by header:\t256KB Kickstart ROM");
 			break;
 		case 2:
-			snprintf(rom_header_info, 64, "ROM type indicated by header:\t512KB Kickstart ROM");
+			snprintf(rom_info.rom_header_info, 64, "ROM type indicated by header:\t512KB Kickstart ROM");
 			break;
 		case 3:
-			snprintf(rom_header_info, 64, "ROM type indicated by header:\tExtended ROM");
+			snprintf(rom_info.rom_header_info, 64, "ROM type indicated by header:\tExtended ROM");
 			break;
 		case 4:
-			snprintf(rom_header_info, 64, "ROM type indicated by header:\t\"ReKick\" ROM");
+			snprintf(rom_info.rom_header_info, 64, "ROM type indicated by header:\t\"ReKick\" ROM");
 			break;
 		case 5:
-			snprintf(rom_header_info, 64, "ROM type indicated by header:\tAmbiguous");
+			snprintf(rom_info.rom_header_info, 64, "ROM type indicated by header:\tAmbiguous");
 			break;
 		default:
-			snprintf(rom_header_info, 64, "ROM type indicated by header:\tUnknown");
+			snprintf(rom_info.rom_header_info, 64, "ROM type indicated by header:\tUnknown");
 			break;
 	}
 
-	rom_type = (char *)malloc(64);
-	if(!rom_type)
+	rom_info.rom_type = (char *)malloc(64);
+	if(!rom_info.rom_type)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
-		free(rom_header_info);
-		rom_header_info = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
 
 	switch(amiga_rom->type)
 	{
 		case 'A':
-			snprintf(rom_type, 64, "ROM type:\t\t\tKickstart Hi ROM");
+			snprintf(rom_info.rom_type, 64, "ROM type:\t\t\tKickstart Hi ROM");
 			break;
 		case 'B':
-			snprintf(rom_type, 64, "ROM type:\t\t\tKickstart Lo ROM");
+			snprintf(rom_info.rom_type, 64, "ROM type:\t\t\tKickstart Lo ROM");
 			break;
 		case 'E':
-			snprintf(rom_type, 64, "ROM type:\t\t\tExtended Amiga ROM");
+			snprintf(rom_info.rom_type, 64, "ROM type:\t\t\tExtended Amiga ROM");
 			break;
 		case 'M':
-			snprintf(rom_type, 64, "ROM type:\t\t\tMerged Kickstart ROM");
+			snprintf(rom_info.rom_type, 64, "ROM type:\t\t\tMerged Kickstart ROM");
 			break;
 		case 'O':
-			snprintf(rom_type, 64, "ROM type:\t\t\tNon-Kickstart Amiga ROM");
+			snprintf(rom_info.rom_type, 64, "ROM type:\t\t\tNon-Kickstart Amiga ROM");
 			break;
 		case 'U':
 		default:
-			snprintf(rom_type, 64, "ROM type:\t\t\tUnknown ROM");
+			snprintf(rom_info.rom_type, 64, "ROM type:\t\t\tUnknown ROM");
 			break;
 	}
 
-	rom_version = (char *)malloc(143);
-	if(!rom_version)
+	rom_info.rom_version = (char *)malloc(143);
+	if(!rom_info.rom_version)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
-		free(rom_header_info);
-		rom_header_info = NULL;
-		free(rom_type);
-		rom_type = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-	snprintf(rom_version, 143, "ROM version:\t\t\t%s", amiga_rom->version);
+	snprintf(rom_info.rom_version, 143, "ROM version:\t\t\t%s", amiga_rom->version);
 
-	embedded_rom_major_version = (char *)malloc(64);
-	if(!embedded_rom_major_version)
+	rom_info.embedded_rom_major_version = (char *)malloc(64);
+	if(!rom_info.embedded_rom_major_version)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
-		free(rom_header_info);
-		rom_header_info = NULL;
-		free(rom_type);
-		rom_type = NULL;
-		free(rom_version);
-		rom_version = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
 
 	if(amiga_rom->major_version != 0xffff)
 	{
-		snprintf(embedded_rom_major_version, 64, "ROM major version number:\t%u", amiga_rom->major_version);
+		snprintf(rom_info.embedded_rom_major_version, 64, "ROM major version number:\t%u", amiga_rom->major_version);
 	}
 	else
 	{
-		snprintf(embedded_rom_major_version, 64, "ROM major version number:\tUnknown");
+		snprintf(rom_info.embedded_rom_major_version, 64, "ROM major version number:\tUnknown");
 	}
 
-	embedded_rom_minor_version = (char *)malloc(64);
-	if(!embedded_rom_minor_version)
+	rom_info.embedded_rom_minor_version = (char *)malloc(64);
+	if(!rom_info.embedded_rom_minor_version)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
-		free(rom_header_info);
-		rom_header_info = NULL;
-		free(rom_type);
-		rom_type = NULL;
-		free(rom_version);
-		rom_version = NULL;
-		free(embedded_rom_major_version);
-		embedded_rom_major_version = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
 
 	if(amiga_rom->minor_version != 0xffff)
 	{
-		snprintf(embedded_rom_minor_version, 64, "ROM minor version number:\t%u", amiga_rom->minor_version);
+		snprintf(rom_info.embedded_rom_minor_version, 64, "ROM minor version number:\t%u", amiga_rom->minor_version);
 	}
 	else
 	{
-		snprintf(embedded_rom_minor_version, 64, "ROM minor version number:\tN/A");
+		snprintf(rom_info.embedded_rom_minor_version, 64, "ROM minor version number:\tN/A");
 	}
 
-	detected_embedded_rom_version = (char *)malloc(157);
-	if(!detected_embedded_rom_version)
+	rom_info.detected_embedded_rom_version = (char *)malloc(157);
+	if(!rom_info.detected_embedded_rom_version)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
-		free(rom_header_info);
-		rom_header_info = NULL;
-		free(rom_type);
-		rom_type = NULL;
-		free(rom_version);
-		rom_version = NULL;
-		free(embedded_rom_major_version);
-		embedded_rom_major_version = NULL;
-		free(embedded_rom_minor_version);
-		embedded_rom_minor_version = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
 
-	snprintf(detected_embedded_rom_version, 157, "ROM detected version number:\t%s", amiga_rom->major_minor_version);
+	snprintf(rom_info.detected_embedded_rom_version, 157, "ROM detected version number:\t%s", amiga_rom->major_minor_version);
 
-	is_kickety_split = (char *)malloc(64);
-	if(!is_kickety_split)
+	rom_info.is_kickety_split = (char *)malloc(64);
+	if(!rom_info.is_kickety_split)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
-		free(rom_header_info);
-		rom_header_info = NULL;
-		free(rom_type);
-		rom_type = NULL;
-		free(rom_version);
-		rom_version = NULL;
-		free(embedded_rom_major_version);
-		embedded_rom_major_version = NULL;
-		free(embedded_rom_minor_version);
-		embedded_rom_minor_version = NULL;
-		free(detected_embedded_rom_version);
-		detected_embedded_rom_version = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
+	snprintf(rom_info.is_kickety_split, 64, "ROM kickety split status:\t%d", amiga_rom->is_kickety_split);
 
-	snprintf(is_kickety_split, 64, "ROM kickety split status:\t%d", amiga_rom->is_kickety_split);
-
-	has_valid_footer = (char *)malloc(64);
-	if(!has_valid_footer)
+	rom_info.has_valid_footer = (char *)malloc(64);
+	if(!rom_info.has_valid_footer)
 	{
-		free(successfully_parsed);
-		successfully_parsed = NULL;
-		free(rom_size_validated);
-		rom_size_validated = NULL;
-		free(has_reset_vector);
-		has_reset_vector = NULL;
-		free(rom_is_encrypted);
-		rom_is_encrypted = NULL;
-		free(can_decrypt_rom);
-		can_decrypt_rom = NULL;
-		free(successfully_decrypted_rom);
-		successfully_decrypted_rom = NULL;
-		free(rom_is_byte_swapped);
-		rom_is_byte_swapped = NULL;
-		free(rom_has_valid_checksum);
-		rom_has_valid_checksum = NULL;
-		free(rom_header_info);
-		rom_header_info = NULL;
-		free(rom_type);
-		rom_type = NULL;
-		free(rom_version);
-		rom_version = NULL;
-		free(embedded_rom_major_version);
-		embedded_rom_major_version = NULL;
-		free(embedded_rom_minor_version);
-		embedded_rom_minor_version = NULL;
-		free(detected_embedded_rom_version);
-		detected_embedded_rom_version = NULL;
-		free(is_kickety_split);
-		is_kickety_split = NULL;
+		DestroyInitializedAmigaROMInfoData(&rom_info);
 		return;
 	}
-
-	snprintf(has_valid_footer, 64, "ROM has valid footer:\t\t%d", amiga_rom->valid_footer);
+	snprintf(rom_info.has_valid_footer, 64, "ROM has valid footer:\t\t%d", amiga_rom->valid_footer);
 
 	snprintf(output_string, string_length, "ROM Info:\n\n");
-	snprintf(output_string, string_length, "%s%s\n", output_string, successfully_parsed);
-	snprintf(output_string, string_length, "%s%s\n", output_string, rom_size_validated);
-	snprintf(output_string, string_length, "%s%s\n", output_string, has_reset_vector);
-	snprintf(output_string, string_length, "%s%s\n", output_string, rom_is_encrypted);
-	snprintf(output_string, string_length, "%s%s\n", output_string, can_decrypt_rom);
-	snprintf(output_string, string_length, "%s%s\n", output_string, successfully_decrypted_rom);
-	snprintf(output_string, string_length, "%s%s\n", output_string, rom_is_byte_swapped);
-	snprintf(output_string, string_length, "%s%s\n", output_string, rom_has_valid_checksum);
-	snprintf(output_string, string_length, "%s%s\n", output_string, rom_header_info);
-	snprintf(output_string, string_length, "%s%s\n", output_string, rom_type);
-	snprintf(output_string, string_length, "%s%s\n", output_string, rom_version);
-	snprintf(output_string, string_length, "%s%s\n", output_string, embedded_rom_major_version);
-	snprintf(output_string, string_length, "%s%s\n", output_string, embedded_rom_minor_version);
-	snprintf(output_string, string_length, "%s%s\n", output_string, detected_embedded_rom_version);
-	snprintf(output_string, string_length, "%s%s\n", output_string, is_kickety_split);
-	snprintf(output_string, string_length, "%s%s\n", output_string, has_valid_footer);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.successfully_parsed);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.rom_size_validated);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.has_reset_vector);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.rom_is_encrypted);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.can_decrypt_rom);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.successfully_decrypted_rom);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.rom_is_byte_swapped);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.rom_has_valid_checksum);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.rom_header_info);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.rom_type);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.rom_version);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.embedded_rom_major_version);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.embedded_rom_minor_version);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.detected_embedded_rom_version);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.is_kickety_split);
+	snprintf(output_string, string_length, "%s%s\n", output_string, rom_info.has_valid_footer);
 
-	free(successfully_parsed);
-	successfully_parsed = NULL;
-	free(rom_size_validated);
-	rom_size_validated = NULL;
-	free(has_reset_vector);
-	has_reset_vector = NULL;
-	free(rom_is_encrypted);
-	rom_is_encrypted = NULL;
-	free(can_decrypt_rom);
-	can_decrypt_rom = NULL;
-	free(successfully_decrypted_rom);
-	successfully_decrypted_rom = NULL;
-	free(rom_is_byte_swapped);
-	rom_is_byte_swapped = NULL;
-	free(rom_has_valid_checksum);
-	rom_has_valid_checksum = NULL;
-	free(rom_header_info);
-	rom_header_info = NULL;
-	free(rom_type);
-	rom_type = NULL;
-	free(rom_version);
-	rom_version = NULL;
-	free(embedded_rom_major_version);
-	embedded_rom_major_version = NULL;
-	free(embedded_rom_minor_version);
-	embedded_rom_minor_version = NULL;
-	free(detected_embedded_rom_version);
-	detected_embedded_rom_version = NULL;
-	free(is_kickety_split);
-	is_kickety_split = NULL;
-	free(has_valid_footer);
-	has_valid_footer = NULL;
+	DestroyInitializedAmigaROMInfoData(&rom_info);
 }
 
 // Parses and validates the data in the Amiga ROM updates the struct
@@ -1692,7 +1547,6 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_
 	if(rom_high->rom_data)
 	{
 		test_ptr = realloc(rom_high->rom_data, amiga_rom->rom_size);
-		printf("fdsa\n");
 		if(!test_ptr)
 		{
 			free(temp_rom_data);
@@ -1723,11 +1577,9 @@ bool SplitAmigaROM(const ParsedAmigaROMData *amiga_rom, ParsedAmigaROMData *rom_
 
 	if(rom_low->rom_data)
 	{
-		printf("dddd\n");
 		printf("Low ROM: %p\n", (void*)rom_low);
 		printf("Low ROM data: %p\n", (void*)rom_low->rom_data);
 		test_ptr = realloc(rom_low->rom_data, amiga_rom->rom_size);
-		printf("asdf\n");
 		if(!test_ptr)
 		{
 			free(temp_rom_data);
