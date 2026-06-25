@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 CFLAGS = -O2 -std=c17 -Wall -Wextra -Werror -pedantic-errors
-LIB_SRCS = AmigaROMUtil.c teeny-sha1.c
+LIB_SRCS = AmigaROMUtil.c teeny-sha256.c
 MAIN_SRC = main.c
 LIB_OBJS = $(LIB_SRCS:.c=.o)
 MAIN_OBJ = $(MAIN_SRC:.c=.o)

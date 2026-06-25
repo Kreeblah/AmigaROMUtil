@@ -104,7 +104,7 @@ SOFTWARE.
 #define AMIGA_512_REKICK_ROM_HEADER          0x11164EF9 //TODO: Properly detect size/handle these
 #define AMIGA_512_REKICK_ROM_HEADER_BYTESWAP 0x1611F94E //TODO: Properly detect size/handle these
 
-extern int sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, size_t databytes);
+extern int SHA256(const uint8_t* msg, size_t msgLen, uint8_t* digest, char* hexDigest);
 
 // Create and return a new and initialized struct.
 // Pointers are NOT allocated, but are NULL instead.
@@ -700,7 +700,7 @@ bool ValidateAmigaROMResetVector(const ParsedAmigaROMData *amiga_rom)
 	return (be16toh(rom_data_16[104]) == 0x4E70);
 }
 
-// Detects the version of the ROM by SHA1 hash
+// Detects the version of the ROM by SHA256 hash
 // Returns NULL for failure, else a string indicating the ROM version
 const char* DetectAmigaROMVersion(const ParsedAmigaROMData *amiga_rom)
 {
@@ -721,7 +721,7 @@ const char* DetectAmigaROMVersion(const ParsedAmigaROMData *amiga_rom)
 		return NULL;
 	}
 
-	hexdigest = (char*)malloc(41);
+	hexdigest = (char*)malloc(65);
 	if(!hexdigest)
 	{
 		free(digest);
@@ -729,7 +729,7 @@ const char* DetectAmigaROMVersion(const ParsedAmigaROMData *amiga_rom)
 		return NULL;
 	}
 
-	if (sha1digest(digest, hexdigest, amiga_rom->rom_data, amiga_rom->rom_size))
+	if (SHA256(amiga_rom->rom_data, amiga_rom->rom_size, digest, hexdigest))
 	{
 		free(digest);
 		digest = NULL;
@@ -740,7 +740,7 @@ const char* DetectAmigaROMVersion(const ParsedAmigaROMData *amiga_rom)
 
 	for (i = 0; i < rom_quantity; i++)
 	{
-		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
+		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha256hash, 40) == 0)
 		{
 			free(digest);
 			digest = NULL;
@@ -821,7 +821,7 @@ const char* DetectAmigaMajorMinorROMVersion(const ParsedAmigaROMData *amiga_rom)
 	return NULL;
 }
 
-// Returns a character indicating the type of ROM detected based on the SHA1 hash
+// Returns a character indicating the type of ROM detected based on the SHA256 hash
 // Valid return values are:
 // A - Kickstart Hi/U34 ROM
 // B - Kickstart Lo/U35 ROM
@@ -848,7 +848,7 @@ char DetectAmigaROMType(const ParsedAmigaROMData *amiga_rom)
 		return 'U';
 	}
 
-	hexdigest = (char*)malloc(41);
+	hexdigest = (char*)malloc(65);
 	if(!hexdigest)
 	{
 		free(digest);
@@ -856,7 +856,7 @@ char DetectAmigaROMType(const ParsedAmigaROMData *amiga_rom)
 		return 'U';
 	}
 
-	if (sha1digest(digest, hexdigest, amiga_rom->rom_data, amiga_rom->rom_size))
+	if (SHA256(amiga_rom->rom_data, amiga_rom->rom_size, digest, hexdigest))
 	{
 		free(digest);
 		digest = NULL;
@@ -867,7 +867,7 @@ char DetectAmigaROMType(const ParsedAmigaROMData *amiga_rom)
 
 	for (i = 0; i < rom_quantity; i++)
 	{
-		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
+		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha256hash, 40) == 0)
 		{
 			free(digest);
 			digest = NULL;
@@ -1408,7 +1408,7 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 		return -1;
 	}
 
-	hexdigest = (char*)malloc(41);
+	hexdigest = (char*)malloc(65);
 	if(!hexdigest)
 	{
 		free(digest);
@@ -1416,7 +1416,7 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 		return -1;
 	}
 
-	if (sha1digest(digest, hexdigest, amiga_rom->rom_data, amiga_rom->rom_size))
+	if (SHA256(amiga_rom->rom_data, amiga_rom->rom_size, digest, hexdigest))
 	{
 		free(digest);
 		digest = NULL;
@@ -1427,7 +1427,7 @@ int DetectAmigaROMByteSwap(const ParsedAmigaROMData *amiga_rom)
 
 	for (i = 0; i < rom_quantity; i++)
 	{
-		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha1hash, 40) == 0)
+		if (strncmp(hexdigest, AMIGA_ROM_INFO[i].sha256hash, 40) == 0)
 		{
 			free(digest);
 			digest = NULL;

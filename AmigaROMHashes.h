@@ -32,7 +32,7 @@ extern "C" {
 #include <stddef.h>
 
 typedef struct {
-	const char sha1hash[41];
+	const char sha256hash[65];
 	const size_t file_size;
 	const char version[128];
 	const char type;
@@ -94,7 +94,7 @@ static const AmigaROMInfo AMIGA_ROM_INFO[] = {
 	{"aab44cd651e6b6f81a3effd8e0ba6b37ab322f32", 524288, "AmigaOS 3.1.4 [46.143] (A4000) (New Copyright)",           'M', 0},
 	{"cd73aefe9cbfc258e7966cd14a7b2f4647c9ba45", 524288, "AmigaOS 3.1.4 [46.143] (A4000T) (New Copyright)",          'M', 0},
 	{"b88e364daf23c9c9920e548b0d3d944e65b1031d", 524288, "AmigaOS 3.2 [47.096] (A500/A600/A1000/A2000/CDTV)",        'M', 0},
-	{"5b2982876fec2166673be447643881262c84090e", 524288, "AmigaOS 3.2 [47.096] (A1200)",                             'M', 0},
+	{"ffcf6993c1a2df032fee1125036e2192cf29f70add547a50fc2cfff8f4fb9f7a", 524288, "AmigaOS 3.2 [47.096] (A1200)",                             'M', 0},
 	{"7bc0e75622d7254e11ea708e5d149007866c93ab", 524288, "AmigaOS 3.2 [47.096] (A3000)",                             'M', 0},
 	{"37a8aa0b83782d75ce0b4a80631ff3459e91dc63", 524288, "AmigaOS 3.2 [47.096] (A4000)",                             'M', 0},
 	{"ede1748eb2cbb1e86ac5bf7dc9b97246a4a54358", 524288, "AmigaOS 3.2 [47.096] (A4000T)",                            'M', 0},
