@@ -26,7 +26,7 @@
 #include <string.h>
 
 /* Declaration:
-extern int SHA256(const uint8_t* msg, size_t msgLen, uint8_t* digest);
+extern int SHA256(const uint8_t* msg, size_t msgLen, uint8_t* digest, char* hexDigest);
 */
 
 /**
