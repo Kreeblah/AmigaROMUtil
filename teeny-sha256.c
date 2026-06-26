@@ -34,9 +34,12 @@ extern int SHA256(const uint8_t* msg, size_t msgLen, uint8_t* digest);
  *
  * @param msg        Pointer to the input message (raw bytes).
  * @param msgLen     Length of the input message in bytes.
- * @param digest     Pointer to a buffer of at least SHA256_DIGEST_SIZE bytes.
+ * @param digest     Pointer to a buffer of at least 32 bytes.
  *                   The resulting 32-byte hash will be written here.
- * @param hexDigest  An ASCII hex string representation of the SHA256 digest.
+ * @param hexDigest  Pointer to a buffer to store an ASCII hex string
+ *                   representation of the SHA256 digest on function return.
+ *                   Must be at least 65 bytes (including space for the
+ *                   null terminator).
  *
  * @return           0 on success, non-zero on failure.
  */
