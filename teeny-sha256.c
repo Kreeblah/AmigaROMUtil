@@ -18,13 +18,12 @@
  * the declaration (example below) in the sources files where needed.
  ******************************************************************************/
 
-#include <string.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* Declaration:
 extern int SHA256(const uint8_t* msg, size_t msgLen, uint8_t* digest);
