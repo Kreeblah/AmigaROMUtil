@@ -1,3 +1,23 @@
+/*******************************************************************************
+ * Teeny SHA-1
+ *
+ * The below SHA256() calculates a SHA-1 hash value for a
+ * specified data buffer and generates a hex representation of the
+ * result.  Modifications from the upstream source are to contain the file to a
+ * single C source file, generate an ASCII hex digest, and compile under strict
+ * C17 standards.
+ * 
+ * Original source repo: https://github.com/CurryB0i/SHA-256-in-C
+ *
+ * Copyright (c) 2025 CurryB0i
+ *
+ * License: MIT, see included LICENSE file for details.
+ *
+ * To use the SHA256() function either copy it into an existing
+ * project source code file or include this file in a project and put
+ * the declaration (example below) in the sources files where needed.
+ ******************************************************************************/
+
 #include <string.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -5,15 +25,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-/**
- * SHA256 implementation modified from the version posted at:
- * 
- * https://github.com/CurryB0i/SHA-256-in-C
- * 
- * Modifications are to contain the file to a single C source file,
- * generate an ASCII hex digest, and compile under strict C17 standards.
- */
 
 /* Declaration:
 extern int SHA256(const uint8_t* msg, size_t msgLen, uint8_t* digest);
